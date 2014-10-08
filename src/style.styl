@@ -1,0 +1,82 @@
+html, body
+  height 100%
+  margin 0
+
+body
+  font-family Arial
+  display flex
+
+main
+  border 1px solid
+  flex 1
+  margin 2em
+
+  overflow-y auto
+
+ol.tree
+  list-style none
+  line-height 1.5
+  margin 0
+  padding 0 0 2em 0
+  width 100%
+
+  *
+    -webkit-user-select none
+    box-sizing border-box
+
+  ol
+    list-style none
+    margin 0
+    padding-left 32px
+
+    &:last-of-type.drop-below
+      border-bottom 2px solid #44f
+      padding-bottom 0
+
+  li.item, li.group
+    background-clip border-box
+    height 2em
+    display flex
+    padding 2px
+    cursor default
+
+    > .icon
+      margin -2px
+      width 32px
+      height 32px
+
+    span
+      align-self center
+      padding 0.25em
+
+    &:hover
+      background-color #ccc
+
+    &.drop-above
+      border-top 2px solid #44f
+      padding-top 0
+
+    &.drop-inside
+      border 2px solid #44f
+      padding 0
+
+  li.item
+    > .icon
+      background-image url(item.svg)
+
+    &.drop-below
+      border-bottom 2px solid #44f
+      padding-bottom 0
+
+  li.group > .icon
+    background-image url(group-open.svg)
+    cursor pointer
+
+  li.group.collapsed
+    > .icon
+      background-image url(group-closed.svg)
+
+    + ol
+      > ol, > li
+        display none
+
