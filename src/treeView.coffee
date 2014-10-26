@@ -8,7 +8,9 @@ window.treeView = (treeRoot, dropCallback) ->
     return false if event.target.tagName not in [ 'LI', 'OL' ] or (! event.target.classList.contains('item') and ! event.target.classList.contains('group'))
     
     # NOTE: Required for Firefox to start the actual dragging
-    event.dataTransfer.setData 'text/plain', null
+    # "try" is required for IE11 to not raise an exception
+    try
+      event.dataTransfer.setData 'text/plain', null
 
     dragged = event.target
     true
