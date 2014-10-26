@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    link(rel='stylesheet',href='style.css')
+    script(src='../../lib/TreeView.js')
+  body
+    main
+    nav
+      button.CreateItem Create item
+      button.CreateGroup Create group
+    script
+      :coffee
+        treeView = new TreeView document.querySelector 'main'
+
+        itemNumber = 1
+        document.querySelector('nav .CreateItem').addEventListener 'click', ->
+          itemElt = document.createElement 'li'
+
+          iconElt = document.createElement 'div'
+          iconElt.classList.add 'icon'
+          itemElt.appendChild iconElt
+
+          spanElt = document.createElement 'span'
+          spanElt.textContent = "Item #{itemNumber++}"
+          itemElt.appendChild spanElt
+
+          treeView.appendItem itemElt
+          return
+
+        groupNumber = 1
+        document.querySelector('nav .CreateGroup').addEventListener 'click', ->
+          groupElt = document.createElement 'li'
+
+          spanElt = document.createElement 'span'
+          spanElt.textContent = "Group #{groupNumber++}"
+          groupElt.appendChild spanElt
+
+          treeView.appendGroup groupElt
+          return

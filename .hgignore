@@ -1,6 +1,6 @@
 syntax: glob
 node_modules/*
-build/*.js
-build/*.css
-build/*.html
 *.sublime-*
+doc/demo/*.html
+doc/demo/*.css
+lib/*.js

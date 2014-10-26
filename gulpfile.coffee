@@ -1,38 +1,43 @@
 gulp = require 'gulp'
-gutil = require 'gulp-util'
 
 paths =
-  scripts: './src/*.coffee'
-  stylesheets: './src/*.styl'
-  views: './src/*.jade'
+  stylesheets: './src/demo/*.styl'
+  views: './src/demo/*.jade'
 
-coffee = require 'gulp-coffee'
-gulp.task 'coffee', ->
-  gulp
-    .src paths.scripts
-    .pipe coffee()
-    .on 'error', gutil.log
-    .pipe gulp.dest './build'
+# Browserify
+browserify = require 'browserify'
+source = require 'vinyl-source-stream'
 
+gulp.task 'build', ->
+  browserify('./TreeView.coffee', extensions: ['.coffee'], standalone: 'TreeView')
+    .bundle()
+    .pipe source 'TreeView.js'
+    .pipe gulp.dest './lib'
+
+# Demo stylesheet
 stylus = require 'gulp-stylus'
 nib = require 'nib'
+
 gulp.task 'stylus', ->
   gulp
     .src paths.stylesheets
     .pipe stylus use: [ nib() ], errors: true
-    .pipe gulp.dest './build'
+    .pipe gulp.dest './doc/demo'
 
+# Demo view
 jade = require 'gulp-jade'
+
 gulp.task 'jade', ->
   gulp
     .src paths.views
     .pipe jade()
-    .pipe gulp.dest './build'
+    .pipe gulp.dest './doc/demo'
 
-tasks = [ 'coffee', 'stylus', 'jade' ]
+# Watch
+tasks = [ 'build', 'stylus', 'jade' ]
 
 gulp.task 'watch', tasks, ->
-  gulp.watch paths.scripts, ['coffee']
+  gulp.watch [ 'src/**/*.coffee' ], ['build']
   gulp.watch paths.stylesheets, ['stylus']
   gulp.watch paths.views, ['jade']
 
