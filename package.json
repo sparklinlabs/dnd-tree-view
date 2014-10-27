@@ -1,7 +1,7 @@
 {
   "name": "tree-view",
   "version": "1.0.0",
-  "description": "Tree view web component",
+  "description": "HTML5 tree view widget",
   "author": "Elisée Maurer <elisee@sparklinlabs.com>",
   "main": "./TreeView.coffee",
   "repository": {
