@@ -71,13 +71,27 @@ module.exports = class TreeView
     
     element
 
-  appendGroup: (groupElement) ->
-    groupElement.classList.add 'group'
+  remove: (element) ->
+    @draggedItem = null if @draggedItem == element
 
-    groupElement.draggable = true
-    @treeRoot.appendChild groupElement
+    selectedIndex = @selectedItems.indexOf element
+    @selectedItems.splice selectedIndex, 1 if selectedIndex != -1
 
-    @treeRoot.appendChild childrenElt
+    if element.classList.contains 'group'
+      childrenElement = element.nextSibling
+
+      removedSelectedItems = []
+      for selectedItem in @selectedItems
+        if childrenElement.contains selectedItem
+          removedSelectedItems.push selectedItem
+
+      while removedSelectedItems.length > 0
+        removedSelectedItem = removedSelectedItems[removedSelectedItems.length - 1]
+        @selectedItems.splice @selectedItems.indexOf(removedSelectedItem), 1
+
+      element.parentElement.removeChild childrenElement
+
+    element.parentElement.removeChild element
     return
 
   _onClick: (event) =>
@@ -145,6 +159,7 @@ module.exports = class TreeView
         'inside'
 
   _onDragOver: (event) =>
+    return false if ! @draggedItem?
     dropInfo = @_getDropInfo event
 
     # Prevent dropping onto null or descendant
@@ -168,6 +183,7 @@ module.exports = class TreeView
 
   _onDrop: (event) =>
     event.preventDefault()
+    return if ! @draggedItem?
 
     dropInfo = @_getDropInfo event
     return if ! dropInfo?

@@ -8,6 +8,7 @@ html
     nav
       button.CreateItem Create item
       button.CreateGroup Create group
+      button.RemoveSelected Remove selected
     script
       :coffee
         treeView = new TreeView document.querySelector 'main'
@@ -36,14 +37,6 @@ html
 
           groupElt
 
-        document.querySelector('nav .CreateItem').addEventListener 'click', ->
-          treeView.append createItem(), 'item'
-          return
-
-        document.querySelector('nav .CreateGroup').addEventListener 'click', ->
-          treeView.append createGroup(), 'group'
-          return
-
         for i in [0...3]
           group = createGroup()
           treeView.append group, 'group'
@@ -52,4 +45,15 @@ html
             item = createItem()
             treeView.append item, 'item', group
 
+        document.querySelector('nav .CreateItem').addEventListener 'click', ->
+          treeView.append createItem(), 'item'
+          return
 
+        document.querySelector('nav .CreateGroup').addEventListener 'click', ->
+          treeView.append createGroup(), 'group'
+          return
+
+        document.querySelector('nav .RemoveSelected').addEventListener 'click', ->
+          while treeView.selectedItems.length > 0
+            treeView.remove treeView.selectedItems[treeView.selectedItems.length - 1]
+          return
