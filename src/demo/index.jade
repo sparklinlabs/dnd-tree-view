@@ -47,7 +47,10 @@ html
           type = event.target.dataset.type
           label = prompt "Enter a name"
           node = if type == 'item' then createItem(label) else createGroup(label)
-          parentNode = treeView.selectedNodes[0] if treeView.selectedNodes[0]?.type == 'group'
+
+          parentNode = treeView.selectedNodes[0]
+          if parentNode? and ! parentNode.classList.contains 'group'
+            parentNode = if parentNode.parentElement.classList.contains('children') then parentNode.parentElement.previousSibling else null
 
           treeView.append node, type, parentNode
           return
