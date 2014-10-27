@@ -175,7 +175,7 @@ module.exports = class TreeView
     @_clearDropClasses()
     return if dropInfo.target == @draggedItem
 
-    reparent = if dropCallback? then dropCallback(@draggedItem, dropInfo.target) else true
+    reparent = dropCallback?(@draggedItem, dropInfo) ? true
     return if ! reparent
 
     draggedChildren = @draggedItem.nextSibling if @draggedItem.classList.contains 'group'
