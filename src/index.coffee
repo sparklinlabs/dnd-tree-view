@@ -1,23 +1,23 @@
 module.exports = class TreeView
 
   constructor: (container, dropCallback) ->
-    @treeRoot = document.createElement 'ol'
-    @treeRoot.classList.add 'tree'
-    container.appendChild @treeRoot
+    @_treeRoot = document.createElement 'ol'
+    @_treeRoot.classList.add 'tree'
+    container.appendChild @_treeRoot
 
     @selectedItems = []
-    # TODO: Implement dragging of multiple items
-    @draggedItem = null
+    @_firstSelectedItem = null
 
-    @treeRoot.addEventListener 'click', @_onClick
-    @treeRoot.addEventListener 'dragstart', @_onDragStart
-    @treeRoot.addEventListener 'dragover', @_onDragOver
-    @treeRoot.addEventListener 'dragleave', @_onDragLeave
-    @treeRoot.addEventListener 'drop', @_onDrop
+    @_treeRoot.addEventListener 'click', @_onClick
+    @_treeRoot.addEventListener 'dragstart', @_onDragStart
+    @_treeRoot.addEventListener 'dragover', @_onDragOver
+    @_treeRoot.addEventListener 'dragleave', @_onDragLeave
+    @_treeRoot.addEventListener 'drop', @_onDrop
 
   clearSelection: ->
     selectedItem.classList.remove 'selected' for selectedItem in @selectedItems
     @selectedItems.length = 0
+    @_firstSelectedItem = null
     return
 
   addToSelection: (itemElement) ->
@@ -25,6 +25,9 @@ module.exports = class TreeView
 
     @selectedItems.push itemElement
     itemElement.classList.add 'selected'
+
+    if @selectedItems.length == 1
+      @_firstSelectedItem = itemElement
     return
 
   append: (element, type, parentGroupElement) ->
@@ -34,7 +37,7 @@ module.exports = class TreeView
       throw new Error 'Invalid parent group' if parentGroupElement.tagName != 'LI' or ! parentGroupElement.classList.contains 'group'
       parentGroupElement = parentGroupElement.nextSibling
     else
-      parentGroupElement = @treeRoot
+      parentGroupElement = @_treeRoot
 
     element.classList.add type
     element.draggable = true
@@ -74,10 +77,10 @@ module.exports = class TreeView
     element
 
   remove: (element) ->
-    @draggedItem = null if @draggedItem == element
-
     selectedIndex = @selectedItems.indexOf element
     @selectedItems.splice selectedIndex, 1 if selectedIndex != -1
+    if @_firstSelectedItem == element
+        @_firstSelectedItem = @selectedItems[0]
 
     if element.classList.contains 'group'
       childrenElement = element.nextSibling
@@ -90,6 +93,8 @@ module.exports = class TreeView
       while removedSelectedItems.length > 0
         removedSelectedItem = removedSelectedItems[removedSelectedItems.length - 1]
         @selectedItems.splice @selectedItems.indexOf(removedSelectedItem), 1
+        if @_firstSelectedItem == removedSelectedItem
+          @_firstSelectedItem = @selectedItems[0]
 
       element.parentElement.removeChild childrenElement
 
@@ -103,20 +108,19 @@ module.exports = class TreeView
         event.target.parentElement.classList.toggle 'collapsed'
         return
 
-    keepSelection = event.shiftKey or event.ctrlKey
-    @clearSelection() if ! keepSelection
-
     # Set selection
+    @clearSelection() if ! event.shiftKey and ! event.ctrlKey
+
     element = event.target
     while element.tagName != 'LI' or (! element.classList.contains('item') and ! element.classList.contains('group'))
-      return if element == @treeRoot
+      return if element == @_treeRoot
       element = element.parentElement
 
     if @selectedItems.length > 0
       return if @selectedItems[0].parentElement != element.parentElement
 
     if event.shiftKey and @selectedItems.length > 0
-      startElement = @selectedItems[0]
+      startElement = @_firstSelectedItem
       elements = []
       inside = false
 
@@ -129,12 +133,9 @@ module.exports = class TreeView
 
         elements.push child if inside
 
-      if elements[elements.length - 1] == startElement
-        # Ensure the start point is still at the start
-        elements.splice 0, 0, elements.splice(elements.length - 1, 1)[0]
-
       @clearSelection()
       @selectedItems = elements
+      @_firstSelectedItem = startElement
       selectedItem.classList.add 'selected' for selectedItem in @selectedItems
     else
       @addToSelection element
@@ -148,18 +149,19 @@ module.exports = class TreeView
     try
       event.dataTransfer.setData 'text/plain', null
 
-    @draggedItem = event.target
-    @clearSelection()
-    @addToSelection @draggedItem
+    if @selectedItems.indexOf(event.target) == -1
+      @clearSelection()
+      @addToSelection event.target
+
     true
 
   _getDropInfo: (event) ->
     element = event.target
 
-    return { target: element.lastChild, where: 'below' } if element == @treeRoot
+    return { target: element.lastChild, where: 'below' } if element == @_treeRoot
 
     while element.tagName != 'LI' or (! element.classList.contains('item') and ! element.classList.contains('group'))
-      return null if element == @treeRoot
+      return null if element == @_treeRoot
       element = element.parentElement
 
     where = @_getInsertionPoint element, event.pageY
@@ -187,21 +189,24 @@ module.exports = class TreeView
         'inside'
 
   _onDragOver: (event) =>
-    return false if ! @draggedItem?
+    return false if @selectedItems.length == 0
     dropInfo = @_getDropInfo event
 
     # Prevent dropping onto null or descendant
     return false if ! dropInfo?
-    return false if @draggedItem.classList.contains('group') and @draggedItem.nextSibling.contains(dropInfo.target)
+    return false if dropInfo.where == 'inside' and @selectedItems.indexOf(dropInfo.target) != -1
+
+    for selectedItem in @selectedItems
+      return false if selectedItem.classList.contains('group') and selectedItem.nextSibling.contains(dropInfo.target)
 
     @_clearDropClasses()
     dropInfo.target.classList.add "drop-#{dropInfo.where}"
     event.preventDefault()
 
   _clearDropClasses: ->
-    @treeRoot.querySelector('.drop-above')?.classList.remove('drop-above')
-    @treeRoot.querySelector('.drop-inside')?.classList.remove('drop-inside')
-    @treeRoot.querySelector('.drop-below')?.classList.remove('drop-below')
+    @_treeRoot.querySelector('.drop-above')?.classList.remove('drop-above')
+    @_treeRoot.querySelector('.drop-inside')?.classList.remove('drop-inside')
+    @_treeRoot.querySelector('.drop-below')?.classList.remove('drop-below')
     return
 
   _onDragLeave: (event) =>
@@ -211,39 +216,45 @@ module.exports = class TreeView
 
   _onDrop: (event) =>
     event.preventDefault()
-    return if ! @draggedItem?
+    return if @selectedItems.length == 0
 
     dropInfo = @_getDropInfo event
     return if ! dropInfo?
 
     @_clearDropClasses()
-    return if dropInfo.target == @draggedItem
 
-    reparent = dropCallback?(@draggedItem, dropInfo) ? true
+    reparent = dropCallback?(dropInfo) ? true
     return if ! reparent
-
-    draggedChildren = @draggedItem.nextSibling if @draggedItem.classList.contains 'group'
 
     switch dropInfo.where
       when 'inside'
         return if ! dropInfo.target.classList.contains 'group'
         
-        @draggedItem.parentElement.removeChild @draggedItem
         newParent = dropInfo.target.nextSibling
-        newParent.insertBefore @draggedItem, newParent.firstChild
+        referenceElt = newParent.firstChild
 
       when 'below'
-        @draggedItem.parentElement.removeChild @draggedItem
         newParent = dropInfo.target.parentElement
-        newParent.insertBefore @draggedItem, dropInfo.target.nextSibling
+        referenceElt = dropInfo.target.nextSibling
 
       when 'above'
-        @draggedItem.parentElement.removeChild @draggedItem
         newParent = dropInfo.target.parentElement
-        newParent.insertBefore @draggedItem, dropInfo.target
+        referenceElt = dropInfo.target
 
-    if draggedChildren?
-      draggedChildren.parentElement.removeChild draggedChildren
-      newParent.insertBefore draggedChildren, @draggedItem.nextSibling
+    for selectedItem in @selectedItems
+      if selectedItem.classList.contains 'group'
+        draggedChildren = selectedItem.nextSibling
+        draggedChildren.parentElement.removeChild draggedChildren
+
+      if referenceElt == selectedItem
+        referenceElt = selectedItem.nextSibling
+
+      selectedItem.parentElement.removeChild selectedItem
+      newParent.insertBefore selectedItem, referenceElt
+      referenceElt = selectedItem.nextSibling
+
+      if draggedChildren?
+        newParent.insertBefore draggedChildren, referenceElt
+        referenceElt = draggedChildren.nextSibling
 
     return
