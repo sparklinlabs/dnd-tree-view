@@ -7,13 +7,17 @@ html, body
 
 body
   font-family Arial
+  font-size 14px
   display flex
   flex-flow column
+  background-color #eee
 
 main
+  background-color #fff
   border 1px solid #888
   flex 1
   margin 1em 1em 0 1em
+  padding 0.25em
   
   overflow-y auto
 
@@ -39,23 +43,25 @@ ol.tree
   ol
     list-style none
     margin 0
-    padding-left 32px
+    padding-left 24px
 
     &:last-of-type.drop-below
-      border-bottom 2px solid #888
+      border-bottom 1px solid #888
       padding-bottom 0
 
   li.item, li.group
     background-clip border-box
-    height 2em
+    height 28px
     display flex
-    padding 2px
+    padding 1px
     cursor default
+    display flex
+    align-items center
 
     > .icon, > .toggle
-      margin -2px
-      width 32px
-      height 32px
+      margin -1px
+      width 24px
+      height 24px
 
     span
       align-self center
@@ -65,27 +71,30 @@ ol.tree
       background-color #eee
 
     &.drop-above
-      border-top 2px solid #888
+      border-top 1px solid #888
       padding-top 0
 
     &.drop-inside
-      border 2px solid #888
+      border 1px solid #888
       padding 0
     
     &.selected
-      background #ccc
+      background #beddf4
 
   li.item
     > .icon
       background-image url(item.svg)
 
     &.drop-below
-      border-bottom 2px solid #888
+      border-bottom 1px solid #888
       padding-bottom 0
 
-  li.group > .toggle
-    background-image url(group-open.svg)
-    cursor pointer
+  li.group
+    color #444
+
+    > .toggle
+      background-image url(group-open.svg)
+      cursor pointer
 
   li.group.collapsed
     > .toggle
