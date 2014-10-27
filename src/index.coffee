@@ -25,24 +25,62 @@ module.exports = class TreeView
     itemElement.classList.add 'selected'
     return
 
-  appendItem: (itemElement) ->
-    itemElement.classList.add 'item'
-    itemElement.draggable = true
-    @treeRoot.appendChild itemElement
-    return
+  append: (element, type, parentGroupElement) ->
+    throw new Error 'Invalid type' if type not in [ 'item', 'group' ]
+    
+    if parentGroupElement?
+      throw new Error 'Invalid parent group' if parentGroupElement.tagName not in [ 'LI', 'OL' ]
+
+      if parentGroupElement.tagName == 'LI'
+        parentGroupElement = parentGroupElement.nextSibling
+        throw new Error 'Invalid parent group' if parentGroupElement?.tagName != 'OL'
+    else
+      parentGroupElement = @treeRoot
+
+    element.classList.add type
+    element.draggable = true
+
+    if type == 'group'
+      toggleElt = document.createElement('div')
+      toggleElt.classList.add 'toggle'
+      element.insertBefore toggleElt, element.firstChild
+
+      childrenElt = document.createElement 'ol'
+      childrenElt.classList.add 'children'
+
+    parentGroupElement.appendChild element
+    parentGroupElement.appendChild childrenElt if childrenElt?
+
+    element
+
+  insertBefore: (element, type, referenceElement) ->
+    throw new Error 'Invalid type' if type not in [ 'item', 'group' ]
+    throw new Error 'A reference element is required' if ! referenceElement?
+    throw new Error 'Invalid reference element' if referenceElement.tagName not in [ 'LI', 'OL' ]
+    referenceElement = referenceElement.nextSibling if referenceElement.classList.contains 'group'
+
+    element.classList.add type
+    element.draggable = true
+
+    if type == 'group'
+      toggleElt = document.createElement('div')
+      toggleElt.classList.add 'toggle'
+      element.insertBefore toggleElt, element.firstChild
+
+      childrenElt = document.createElement 'ol'
+      childrenElt.classList.add 'children'
+
+    referenceElement.parentElement.insertBefore element, referenceElement.nextSibling
+    referenceElement.parentElement.insertBefore childrenElt, element if childrenElt?
+    
+    element
 
   appendGroup: (groupElement) ->
     groupElement.classList.add 'group'
 
-    toggleElt = document.createElement('div')
-    toggleElt.classList.add 'toggle'
-
-    groupElement.insertBefore toggleElt, groupElement.firstChild
     groupElement.draggable = true
     @treeRoot.appendChild groupElement
 
-    childrenElt = document.createElement 'ol'
-    childrenElt.classList.add 'children'
     @treeRoot.appendChild childrenElt
     return
 

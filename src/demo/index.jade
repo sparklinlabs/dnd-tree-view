@@ -13,7 +13,7 @@ html
         treeView = new TreeView document.querySelector 'main'
 
         itemNumber = 1
-        document.querySelector('nav .CreateItem').addEventListener 'click', ->
+        createItem = ->
           itemElt = document.createElement 'li'
 
           iconElt = document.createElement 'div'
@@ -23,17 +23,33 @@ html
           spanElt = document.createElement 'span'
           spanElt.textContent = "Item #{itemNumber++}"
           itemElt.appendChild spanElt
-
-          treeView.appendItem itemElt
-          return
+          
+          itemElt
 
         groupNumber = 1
-        document.querySelector('nav .CreateGroup').addEventListener 'click', ->
+        createGroup = ->
           groupElt = document.createElement 'li'
 
           spanElt = document.createElement 'span'
           spanElt.textContent = "Group #{groupNumber++}"
           groupElt.appendChild spanElt
 
-          treeView.appendGroup groupElt
+          groupElt
+
+        document.querySelector('nav .CreateItem').addEventListener 'click', ->
+          treeView.append createItem(), 'item'
           return
+
+        document.querySelector('nav .CreateGroup').addEventListener 'click', ->
+          treeView.append createGroup(), 'group'
+          return
+
+        for i in [0...3]
+          group = createGroup()
+          treeView.append group, 'group'
+
+          for i in [0...3]
+            item = createItem()
+            treeView.append item, 'item', group
+
+
