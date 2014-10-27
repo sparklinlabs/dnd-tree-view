@@ -1,6 +1,6 @@
 module.exports = class TreeView
 
-  constructor: (container, dropCallback) ->
+  constructor: (container, @dropCallback) ->
     @_treeRoot = document.createElement 'ol'
     @_treeRoot.classList.add 'tree'
     container.appendChild @_treeRoot
@@ -223,7 +223,7 @@ module.exports = class TreeView
 
     @_clearDropClasses()
 
-    reparent = dropCallback?(dropInfo) ? true
+    reparent = @dropCallback?(dropInfo) ? true
     return if ! reparent
 
     switch dropInfo.where
