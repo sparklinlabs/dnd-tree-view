@@ -6,15 +6,14 @@ html
   body
     main
     nav
-      button.CreateItem Create item
-      button.CreateGroup Create group
+      button(data-type="item").CreateItem Create item
+      button(data-type="group").CreateGroup Create group
       button.RemoveSelected Remove selected
     script
       :coffee
         treeView = new TreeView document.querySelector 'main'
 
-        itemNumber = 1
-        createItem = ->
+        createItem = (label) ->
           itemElt = document.createElement 'li'
 
           iconElt = document.createElement 'div'
@@ -22,38 +21,41 @@ html
           itemElt.appendChild iconElt
 
           spanElt = document.createElement 'span'
-          spanElt.textContent = "Item #{itemNumber++}"
+          spanElt.textContent = label
           itemElt.appendChild spanElt
           
           itemElt
 
-        groupNumber = 1
-        createGroup = ->
+        createGroup = (label) ->
           groupElt = document.createElement 'li'
 
           spanElt = document.createElement 'span'
-          spanElt.textContent = "Group #{groupNumber++}"
+          spanElt.textContent = label
           groupElt.appendChild spanElt
 
           groupElt
 
         for i in [0...3]
-          group = createGroup()
+          group = createGroup "Group #{i+1}"
           treeView.append group, 'group'
 
-          for i in [0...3]
-            item = createItem()
+          for j in [0...3]
+            item = createItem "Item #{i*3+j+1}"
             treeView.append item, 'item', group
 
-        document.querySelector('nav .CreateItem').addEventListener 'click', ->
-          treeView.append createItem(), 'item'
+        onClickCreate = ->
+          type = event.target.dataset.type
+          label = prompt "Enter a name"
+          node = if type == 'item' then createItem(label) else createGroup(label)
+          parentNode = treeView.selectedNodes[0] if treeView.selectedNodes[0]?.type == 'group'
+
+          treeView.append node, type, parentNode
           return
 
-        document.querySelector('nav .CreateGroup').addEventListener 'click', ->
-          treeView.append createGroup(), 'group'
-          return
+        document.querySelector('nav .CreateItem').addEventListener 'click', onClickCreate
+        document.querySelector('nav .CreateGroup').addEventListener 'click', onClickCreate
 
         document.querySelector('nav .RemoveSelected').addEventListener 'click', ->
-          while treeView.selectedItems.length > 0
-            treeView.remove treeView.selectedItems[treeView.selectedItems.length - 1]
+          while treeView.selectedNodes.length > 0
+            treeView.remove treeView.selectedNodes[treeView.selectedNodes.length - 1]
           return
