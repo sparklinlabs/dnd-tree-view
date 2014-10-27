@@ -5,8 +5,8 @@ module.exports = class TreeView
     @treeRoot.classList.add 'tree'
     container.appendChild @treeRoot
 
-    # TODO: Implement multiple selection
     @selectedItems = []
+    # TODO: Implement dragging of multiple items
     @draggedItem = null
 
     @treeRoot.addEventListener 'click', @_onClick
@@ -20,7 +20,9 @@ module.exports = class TreeView
     @selectedItems.length = 0
     return
 
-  select: (itemElement) ->
+  addToSelection: (itemElement) ->
+    return if @selectedItems.indexOf(itemElement) != -1
+
     @selectedItems.push itemElement
     itemElement.classList.add 'selected'
     return
@@ -101,7 +103,8 @@ module.exports = class TreeView
         event.target.parentElement.classList.toggle 'collapsed'
         return
 
-    @clearSelection() # if ! keepSelection
+    keepSelection = event.shiftKey or event.ctrlKey
+    @clearSelection() if ! keepSelection
 
     # Set selection
     element = event.target
@@ -109,7 +112,32 @@ module.exports = class TreeView
       return if element == @treeRoot
       element = element.parentElement
 
-    @select element
+    if @selectedItems.length > 0
+      return if @selectedItems[0].parentElement != element.parentElement
+
+    if event.shiftKey and @selectedItems.length > 0
+      startElement = @selectedItems[0]
+      elements = []
+      inside = false
+
+      for child in element.parentElement.children
+        if child == startElement or child == element
+          if inside or startElement == element
+            elements.push child
+            break
+          inside = true
+
+        elements.push child if inside
+
+      if elements[elements.length - 1] == startElement
+        # Ensure the start point is still at the start
+        elements.splice 0, 0, elements.splice(elements.length - 1, 1)[0]
+
+      @clearSelection()
+      @selectedItems = elements
+      selectedItem.classList.add 'selected' for selectedItem in @selectedItems
+    else
+      @addToSelection element
     return
 
   _onDragStart: (event) =>
@@ -122,7 +150,7 @@ module.exports = class TreeView
 
     @draggedItem = event.target
     @clearSelection()
-    @select @draggedItem
+    @addToSelection @draggedItem
     true
 
   _getDropInfo: (event) ->
