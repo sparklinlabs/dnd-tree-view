@@ -131,7 +131,7 @@ module.exports = class TreeView
             break
           inside = true
 
-        elements.push child if inside
+        elements.push child if inside and child.tagName == 'LI'
 
       @clearSelection()
       @selectedNodes = elements
