@@ -43,7 +43,7 @@ html
             item = createItem "Item #{i*3+j+1}"
             treeView.append item, 'item', group
 
-        onClickCreate = ->
+        onClickCreate = (event) ->
           type = event.target.dataset.type
           label = prompt "Enter a name"
           node = if type == 'item' then createItem(label) else createGroup(label)
