@@ -29,11 +29,8 @@ module.exports = class TreeView
     throw new Error 'Invalid type' if type not in [ 'item', 'group' ]
     
     if parentGroupElement?
-      throw new Error 'Invalid parent group' if parentGroupElement.tagName not in [ 'LI', 'OL' ]
-
-      if parentGroupElement.tagName == 'LI'
-        parentGroupElement = parentGroupElement.nextSibling
-        throw new Error 'Invalid parent group' if parentGroupElement?.tagName != 'OL'
+      throw new Error 'Invalid parent group' if parentGroupElement.tagName != 'LI' or ! parentGroupElement.classList.contains 'group'
+      parentGroupElement = parentGroupElement.nextSibling
     else
       parentGroupElement = @treeRoot
 
@@ -56,8 +53,7 @@ module.exports = class TreeView
   insertBefore: (element, type, referenceElement) ->
     throw new Error 'Invalid type' if type not in [ 'item', 'group' ]
     throw new Error 'A reference element is required' if ! referenceElement?
-    throw new Error 'Invalid reference element' if referenceElement.tagName not in [ 'LI', 'OL' ]
-    referenceElement = referenceElement.nextSibling if referenceElement.classList.contains 'group'
+    throw new Error 'Invalid reference element' if referenceElement.tagName != 'LI'
 
     element.classList.add type
     element.draggable = true
