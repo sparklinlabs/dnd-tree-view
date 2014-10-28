@@ -71,8 +71,8 @@ module.exports = class TreeView
       childrenElt = document.createElement 'ol'
       childrenElt.classList.add 'children'
 
-    referenceElement.parentElement.insertBefore element, referenceElement.nextSibling
-    referenceElement.parentElement.insertBefore childrenElt, element if childrenElt?
+    referenceElement.parentElement.insertBefore element, referenceElement
+    referenceElement.parentElement.insertBefore childrenElt, element.nextSibling if childrenElt?
     
     element
 
@@ -158,7 +158,10 @@ module.exports = class TreeView
   _getDropInfo: (event) ->
     element = event.target
 
-    return { target: element.lastChild, where: 'below' } if element == @_treeRoot
+    if element == @_treeRoot
+      element = element.lastChild
+      element = element.previousSibling if element.tagName == 'OL'
+      return { target: element, where: 'below' }
 
     while element.tagName != 'LI' or (! element.classList.contains('item') and ! element.classList.contains('group'))
       return null if element == @_treeRoot
@@ -236,6 +239,7 @@ module.exports = class TreeView
       when 'below'
         newParent = dropInfo.target.parentElement
         referenceElt = dropInfo.target.nextSibling
+        referenceElt = referenceElt.nextSibling if referenceElt?.tagName == 'OL'
 
       when 'above'
         newParent = dropInfo.target.parentElement
