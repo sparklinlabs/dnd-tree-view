@@ -95,10 +95,13 @@ ol.tree
     > .toggle
       background-image url(group-open.svg)
       cursor pointer
-    
-    &.drop-below + ol
-      border-bottom 1px solid #888
-      padding-bottom 0
+
+    &.drop-below
+      + ol
+        border-bottom 1px solid #888
+        
+        &:empty
+          margin-top -1px
 
   li.group.collapsed
     > .toggle

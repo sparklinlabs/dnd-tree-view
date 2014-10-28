@@ -168,9 +168,14 @@ module.exports = class TreeView
       element = element.parentElement
 
     where = @_getInsertionPoint element, event.pageY
-    if where == 'below' and element.classList.contains('item') and element.nextSibling?.tagName == 'LI'
-      element = element.nextSibling
-      where = 'above'
+    if where == 'below'
+      if element.classList.contains('item') and element.nextSibling?.tagName == 'LI'
+        element = element.nextSibling
+        where = 'above'
+
+      if element.classList.contains('group') and element.nextSibling.nextSibling?.tagName == 'LI'
+        element = element.nextSibling.nextSibling
+        where = 'above'
 
     { target: element, where: where }
 
@@ -181,7 +186,7 @@ module.exports = class TreeView
     if offset < rect.height / 4
       'above'
     else if offset > rect.height * 3 / 4
-      if element.classList.contains('group')
+      if element.classList.contains('group') and element.nextSibling.childElementCount > 0
         'inside'
       else
         'below'
