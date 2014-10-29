@@ -40,12 +40,13 @@ html
           treeView.append group, 'group'
 
           for j in [0...3]
-            item = createGroup "Item #{i*3+j+1}"
-            treeView.append item, 'group', group
+            item = createItem "Item #{i*3+j+1}"
+            treeView.append item, 'item', group
 
         onClickCreate = (event) ->
           type = event.target.dataset.type
-          label = prompt "Enter a name"
+          label = prompt "Enter a name", ""
+          return if label.length == 0
           node = if type == 'item' then createItem(label) else createGroup(label)
 
           parentNode = treeView.selectedNodes[0]
