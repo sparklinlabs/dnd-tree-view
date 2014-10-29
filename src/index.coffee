@@ -263,7 +263,13 @@ module.exports = class TreeView
         newParent = dropInfo.target.parentElement
         referenceElt = dropInfo.target
 
-    for selectedNode in @selectedNodes
+    children = @selectedNodes[0].parentElement.children
+
+    orderedNodes = []
+    for child in children
+      orderedNodes.push child if @selectedNodes.indexOf(child) != -1
+
+    for selectedNode in orderedNodes
       if selectedNode.classList.contains 'group'
         draggedChildren = selectedNode.nextSibling
         draggedChildren.parentElement.removeChild draggedChildren
