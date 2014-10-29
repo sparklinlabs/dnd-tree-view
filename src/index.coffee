@@ -158,6 +158,9 @@ module.exports = class TreeView
   _getDropInfo: (event) ->
     element = event.target
 
+    if element.tagName == 'OL' and element.classList.contains 'children'
+      element = element.parentElement
+
     if element == @_treeRoot
       element = element.lastChild
       element = element.previousSibling if element.tagName == 'OL'
@@ -207,6 +210,7 @@ module.exports = class TreeView
     for selectedNode in @selectedNodes
       return false if selectedNode.classList.contains('group') and selectedNode.nextSibling.contains(dropInfo.target)
 
+    @hasDraggedOverAfterLeaving = true
     @_clearDropClasses()
     dropInfo.target.classList.add "drop-#{dropInfo.where}"
     event.preventDefault()
@@ -218,8 +222,8 @@ module.exports = class TreeView
     return
 
   _onDragLeave: (event) =>
-    dropInfo = @_getDropInfo event
-    @_clearDropClasses()
+    @hasDraggedOverAfterLeaving = false
+    setTimeout ( => @_clearDropClasses() if ! @hasDraggedOverAfterLeaving ), 300
     return
 
   _onDrop: (event) =>
