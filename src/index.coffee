@@ -175,8 +175,7 @@ module.exports = class TreeView
       if element.classList.contains('item') and element.nextSibling?.tagName == 'LI'
         element = element.nextSibling
         where = 'above'
-
-      if element.classList.contains('group') and element.nextSibling.nextSibling?.tagName == 'LI'
+      else if element.classList.contains('group') and element.nextSibling.nextSibling?.tagName == 'LI'
         element = element.nextSibling.nextSibling
         where = 'above'
 
