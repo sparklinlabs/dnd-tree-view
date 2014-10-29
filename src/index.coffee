@@ -138,6 +138,16 @@ module.exports = class TreeView
       @_firstSelectedNode = startElement
       selectedNode.classList.add 'selected' for selectedNode in @selectedNodes
     else
+      if event.ctrlKey
+        index = @selectedNodes.indexOf element
+        if index != -1
+          @selectedNodes.splice index, 1
+          element.classList.remove 'selected'
+
+          if @_firstSelectedNode = element
+            @_firstSelectedNode = @selectedNodes[0]
+          return
+
       @addToSelection element
     return
 
