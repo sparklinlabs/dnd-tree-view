@@ -3,19 +3,19 @@ EventEmitter = require('events').EventEmitter
 module.exports = class TreeView extends EventEmitter
 
   constructor: (container, @dropCallback) ->
-    @_treeRoot = document.createElement 'ol'
-    @_treeRoot.classList.add 'tree'
-    container.appendChild @_treeRoot
+    @treeRoot = document.createElement 'ol'
+    @treeRoot.classList.add 'tree'
+    container.appendChild @treeRoot
 
     @selectedNodes = []
     @_firstSelectedNode = null
 
-    @_treeRoot.addEventListener 'click', @_onClick
-    @_treeRoot.addEventListener 'dblclick', @_onDoubleClick
-    @_treeRoot.addEventListener 'dragstart', @_onDragStart
-    @_treeRoot.addEventListener 'dragover', @_onDragOver
-    @_treeRoot.addEventListener 'dragleave', @_onDragLeave
-    @_treeRoot.addEventListener 'drop', @_onDrop
+    @treeRoot.addEventListener 'click', @_onClick
+    @treeRoot.addEventListener 'dblclick', @_onDoubleClick
+    @treeRoot.addEventListener 'dragstart', @_onDragStart
+    @treeRoot.addEventListener 'dragover', @_onDragOver
+    @treeRoot.addEventListener 'dragleave', @_onDragLeave
+    @treeRoot.addEventListener 'drop', @_onDrop
 
   clearSelection: ->
     selectedNode.classList.remove 'selected' for selectedNode in @selectedNodes
@@ -40,7 +40,7 @@ module.exports = class TreeView extends EventEmitter
       throw new Error 'Invalid parent group' if parentGroupElement.tagName != 'LI' or ! parentGroupElement.classList.contains 'group'
       parentGroupElement = parentGroupElement.nextSibling
     else
-      parentGroupElement = @_treeRoot
+      parentGroupElement = @treeRoot
 
     element.classList.add type
     element.draggable = true
@@ -126,7 +126,7 @@ module.exports = class TreeView extends EventEmitter
 
     element = event.target
     while element.tagName != 'LI' or (! element.classList.contains('item') and ! element.classList.contains('group'))
-      return selectionChanged if element == @_treeRoot
+      return selectionChanged if element == @treeRoot
       element = element.parentElement
 
     if @selectedNodes.length > 0 and @selectedNodes[0].parentElement != element.parentElement
@@ -190,13 +190,13 @@ module.exports = class TreeView extends EventEmitter
     if element.tagName == 'OL' and element.classList.contains 'children'
       element = element.parentElement
 
-    if element == @_treeRoot
+    if element == @treeRoot
       element = element.lastChild
       element = element.previousSibling if element.tagName == 'OL'
       return { target: element, where: 'below' }
 
     while element.tagName != 'LI' or (! element.classList.contains('item') and ! element.classList.contains('group'))
-      return null if element == @_treeRoot
+      return null if element == @treeRoot
       element = element.parentElement
 
     where = @_getInsertionPoint element, event.pageY
@@ -244,9 +244,9 @@ module.exports = class TreeView extends EventEmitter
     event.preventDefault()
 
   _clearDropClasses: ->
-    @_treeRoot.querySelector('.drop-above')?.classList.remove('drop-above')
-    @_treeRoot.querySelector('.drop-inside')?.classList.remove('drop-inside')
-    @_treeRoot.querySelector('.drop-below')?.classList.remove('drop-below')
+    @treeRoot.querySelector('.drop-above')?.classList.remove('drop-above')
+    @treeRoot.querySelector('.drop-inside')?.classList.remove('drop-inside')
+    @treeRoot.querySelector('.drop-below')?.classList.remove('drop-below')
     return
 
   _onDragLeave: (event) =>
