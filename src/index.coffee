@@ -1,4 +1,6 @@
-module.exports = class TreeView
+EventEmitter = require('events').EventEmitter
+
+module.exports = class TreeView extends EventEmitter
 
   constructor: (container, @dropCallback) ->
     @_treeRoot = document.createElement 'ol'
@@ -9,6 +11,7 @@ module.exports = class TreeView
     @_firstSelectedNode = null
 
     @_treeRoot.addEventListener 'click', @_onClick
+    @_treeRoot.addEventListener 'dblclick', @_onDoubleClick
     @_treeRoot.addEventListener 'dragstart', @_onDragStart
     @_treeRoot.addEventListener 'dragover', @_onDragOver
     @_treeRoot.addEventListener 'dragleave', @_onDragLeave
@@ -108,16 +111,26 @@ module.exports = class TreeView
         event.target.parentElement.classList.toggle 'collapsed'
         return
 
-    # Set selection
-    @clearSelection() if ! event.shiftKey and ! event.ctrlKey
+    # Update selection
+    @emit 'selectionChange' if @_updateSelection event
+
+    return
+
+  # Returns whether the selection changed
+  _updateSelection: (event) ->
+    selectionChanged = false
+
+    if ! event.shiftKey and ! event.ctrlKey and @selectedNodes.length > 0
+      @clearSelection()
+      selectionChanged = true
 
     element = event.target
     while element.tagName != 'LI' or (! element.classList.contains('item') and ! element.classList.contains('group'))
-      return if element == @_treeRoot
+      return selectionChanged if element == @_treeRoot
       element = element.parentElement
 
-    if @selectedNodes.length > 0
-      return if @selectedNodes[0].parentElement != element.parentElement
+    if @selectedNodes.length > 0 and @selectedNodes[0].parentElement != element.parentElement
+      return selectionChanged
 
     if event.shiftKey and @selectedNodes.length > 0
       startElement = @_firstSelectedNode
@@ -137,18 +150,24 @@ module.exports = class TreeView
       @selectedNodes = elements
       @_firstSelectedNode = startElement
       selectedNode.classList.add 'selected' for selectedNode in @selectedNodes
-    else
-      if event.ctrlKey
-        index = @selectedNodes.indexOf element
-        if index != -1
-          @selectedNodes.splice index, 1
-          element.classList.remove 'selected'
 
-          if @_firstSelectedNode = element
-            @_firstSelectedNode = @selectedNodes[0]
-          return
+      return true
 
-      @addToSelection element
+    if event.ctrlKey and (index = @selectedNodes.indexOf(element)) != -1
+      @selectedNodes.splice index, 1
+      element.classList.remove 'selected'
+
+      if @_firstSelectedNode == element
+        @_firstSelectedNode = @selectedNodes[0]
+
+      return true
+
+    @addToSelection element
+    true
+
+  _onDoubleClick: (event) =>
+    return if @selectedNodes.length != 1
+    @emit 'activate'
     return
 
   _onDragStart: (event) =>

@@ -9,6 +9,7 @@ html
       button(data-type="item").CreateItem Create item
       button(data-type="group").CreateGroup Create group
       button.RemoveSelected Remove selected
+      .SelectedNodes No items selected
     script
       :coffee
         treeView = new TreeView document.querySelector 'main'
@@ -63,3 +64,16 @@ html
           while treeView.selectedNodes.length > 0
             treeView.remove treeView.selectedNodes[treeView.selectedNodes.length - 1]
           return
+
+        treeView.on 'selectionChange', ->
+          document.querySelector('nav .SelectedNodes').textContent =
+            if treeView.selectedNodes.length > 1
+              "#{treeView.selectedNodes.length} items selected"
+            else if treeView.selectedNodes.length == 1
+              "1 item selected"
+            else
+              "No items selected"
+          return
+
+        treeView.on 'activate', ->
+          alert 'Activated "' + treeView.selectedNodes[0].querySelector('span').textContent + '"'
