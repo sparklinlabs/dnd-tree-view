@@ -1,4 +1,4 @@
-EventEmitter = require('events').EventEmitter
+{ EventEmitter } = require('events')
 
 module.exports = class TreeView extends EventEmitter
 
