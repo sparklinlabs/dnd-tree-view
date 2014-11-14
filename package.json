@@ -1,12 +1,13 @@
 {
-  "name": "tree-view",
+  "name": "dnd-tree-view",
   "version": "1.0.0",
   "description": "HTML5 tree view widget",
   "author": "Elisée Maurer <elisee@sparklinlabs.com>",
-  "main": "./TreeView.coffee",
+  "main": "./lib/TreeView.js",
+  "keywords": [  "treeview", "tree", "tree view", "widget", "reorderable", "reparent", "dnd", "drag'n'drop" ],
   "repository": {
     "type": "hg",
-    "url": "https://bitbucket.org/sparklinlabs/tree-view"
+    "url": "https://bitbucket.org/sparklinlabs/dnd-tree-view"
   },
   "license": "MIT",
   "devDependencies": {
@@ -16,9 +17,7 @@
     "gulp-jade": "^0.8.0",
     "gulp-stylus": "^1.3.3",
     "nib": "^1.0.4",
-    "vinyl-source-stream": "^1.0.0"
-  },
-  "dependencies": {
+    "vinyl-source-stream": "^1.0.0",
     "coffee-script": "^1.8.0"
   },
   "browserify": {

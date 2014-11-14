@@ -1,4 +1,4 @@
-# tree-view
+# dnd-tree-view
 
 Robust, stylable tree view widget for HTML5 apps.  
 Features cancellable drag'n'drop, suitable for networked apps.
@@ -8,12 +8,12 @@ Features cancellable drag'n'drop, suitable for networked apps.
 (Not yet published)
 
 ```
-npm install tree-view
+npm install dnd-tree-view
 ```
 
 ## Usage
 
-Check out the [live demo](http://sparklinlabs.bitbucket.org/tree-view/doc/demo/) and its [source code](https://bitbucket.org/sparklinlabs/tree-view/src/tip/src/demo/).
+Check out the [live demo](http://sparklinlabs.bitbucket.org/dnd-tree-view/doc/demo/) and its [source code](https://bitbucket.org/sparklinlabs/dnd-tree-view/src/tip/src/demo/).
 
  * Include ``TreeView.js`` in your page.
  * Create a container element, call ``treeView = new TreeView(container)``.
@@ -24,7 +24,7 @@ Check out the [live demo](http://sparklinlabs.bitbucket.org/tree-view/doc/demo/)
 
 Make sure you have [Node.js](http://nodejs.org/) 0.10+ installed.
 
- * Clone the Mercurial repository from ``https://bitbucket.org/sparklinlabs/tree-view``
+ * Clone the Mercurial repository from ``https://bitbucket.org/sparklinlabs/dnd-tree-view``
  * Run ``npm install`` once
  * Run ``gulp`` to build ``lib/TreeView.js`` from the CoffeeScript source.
  * Run ``gulp watch`` to start a watcher that will rebuild it anytime you make a change.
