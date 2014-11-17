@@ -263,7 +263,10 @@ module.exports = class TreeView extends EventEmitter
 
     @_clearDropClasses()
 
-    reparent = @dropCallback?(dropInfo) ? true
+    children = @selectedNodes[0].parentElement.children
+    orderedNodes = ( child for child in children when @selectedNodes.indexOf(child) != -1 )
+
+    reparent = @dropCallback?(dropInfo, orderedNodes) ? true
     return if ! reparent
 
     switch dropInfo.where
@@ -281,12 +284,6 @@ module.exports = class TreeView extends EventEmitter
       when 'above'
         newParent = dropInfo.target.parentElement
         referenceElt = dropInfo.target
-
-    children = @selectedNodes[0].parentElement.children
-
-    orderedNodes = []
-    for child in children
-      orderedNodes.push child if @selectedNodes.indexOf(child) != -1
 
     for selectedNode in orderedNodes
       if selectedNode.classList.contains 'group'
