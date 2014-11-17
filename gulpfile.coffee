@@ -7,11 +7,13 @@ paths =
 # Browserify
 browserify = require 'browserify'
 source = require 'vinyl-source-stream'
+derequire = require 'gulp-derequire'
 
 gulp.task 'build', ->
   browserify('./TreeView.coffee', extensions: ['.coffee'], standalone: 'TreeView')
     .bundle()
     .pipe source 'TreeView.js'
+    .pipe derequire()
     .pipe gulp.dest './lib'
 
 # Demo stylesheet
