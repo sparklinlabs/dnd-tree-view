@@ -42,16 +42,19 @@ module.exports = class TreeView extends EventEmitter
     else
       parentGroupElement = @treeRoot
 
-    element.classList.add type
-    element.draggable = true
+     if ! element.classList.contains type
+      element.classList.add type
+      element.draggable = true
 
-    if type == 'group'
-      toggleElt = document.createElement('div')
-      toggleElt.classList.add 'toggle'
-      element.insertBefore toggleElt, element.firstChild
+      if type == 'group'
+        toggleElt = document.createElement('div')
+        toggleElt.classList.add 'toggle'
+        element.insertBefore toggleElt, element.firstChild
 
-      childrenElt = document.createElement 'ol'
-      childrenElt.classList.add 'children'
+        childrenElt = document.createElement 'ol'
+        childrenElt.classList.add 'children'
+    else if type == 'group'
+      childrenElt = element.nextSibling
 
     parentGroupElement.appendChild element
     parentGroupElement.appendChild childrenElt if childrenElt?
@@ -63,21 +66,35 @@ module.exports = class TreeView extends EventEmitter
     throw new Error 'A reference element is required' if ! referenceElement?
     throw new Error 'Invalid reference element' if referenceElement.tagName != 'LI'
 
-    element.classList.add type
-    element.draggable = true
+    if ! element.classList.contains type
+      element.classList.add type
+      element.draggable = true
 
-    if type == 'group'
-      toggleElt = document.createElement('div')
-      toggleElt.classList.add 'toggle'
-      element.insertBefore toggleElt, element.firstChild
+      if type == 'group'
+        toggleElt = document.createElement('div')
+        toggleElt.classList.add 'toggle'
+        element.insertBefore toggleElt, element.firstChild
 
-      childrenElt = document.createElement 'ol'
-      childrenElt.classList.add 'children'
+        childrenElt = document.createElement 'ol'
+        childrenElt.classList.add 'children'
+    else if type == 'group'
+      childrenElt = element.nextSibling
 
     referenceElement.parentElement.insertBefore element, referenceElement
     referenceElement.parentElement.insertBefore childrenElt, element.nextSibling if childrenElt?
     
     element
+
+  insertAt: (element, type, index, parentElement) ->
+    if index?
+      referenceElt =
+        if parentElement? then parentElement.nextSibling.querySelector(":scope > li:nth-of-type(#{index + 1})")
+        else @treeRoot.querySelector(":scope > li:nth-of-type(#{index + 1})")
+
+    if referenceElt? then @insertBefore element, type, referenceElt
+    else @append element, type, parentElement
+
+    return
 
   remove: (element) ->
     selectedIndex = @selectedNodes.indexOf element
