@@ -111,9 +111,9 @@ module.exports = class TreeView extends EventEmitter
           removedSelectedNodes.push selectedNode
 
       while removedSelectedNodes.length > 0
-        removedselectedNode = removedSelectedNodes[removedSelectedNodes.length - 1]
-        @selectedNodes.splice @selectedNodes.indexOf(removedselectedNode), 1
-        if @_firstSelectedNode == removedselectedNode
+        removedSelectedNode = removedSelectedNodes[removedSelectedNodes.length - 1]
+        @selectedNodes.splice @selectedNodes.indexOf(removedSelectedNode), 1
+        if @_firstSelectedNode == removedSelectedNode
           @_firstSelectedNode = @selectedNodes[0]
 
       element.parentElement.removeChild childrenElement
