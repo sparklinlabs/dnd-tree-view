@@ -5,8 +5,6 @@ Features cancellable drag'n'drop, suitable for networked apps.
 
 ## How to install
 
-(Not yet published)
-
 ```
 npm install dnd-tree-view
 ```
