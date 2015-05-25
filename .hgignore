@@ -4,3 +4,4 @@ node_modules/*
 doc/demo/*.html
 doc/demo/*.css
 lib/*.js
+src/*.js

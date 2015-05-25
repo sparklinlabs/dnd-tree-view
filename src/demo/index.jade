@@ -1,80 +1,84 @@
 doctype html
 html
   head
-    link(rel='stylesheet',href='style.css')
-    script(src='../../lib/TreeView.js')
+    link(rel="stylesheet",href="style.css")
+    script(src="../../lib/TreeView.js")
   body
     main
     nav
-      button(data-type="item").CreateItem Create item
-      button(data-type="group").CreateGroup Create group
-      button.RemoveSelected Remove selected
-      .SelectedNodes No items selected
-    script
-      :coffee
-        treeView = new TreeView document.querySelector 'main'
+      button(data-type="item").create-item Create item
+      button(data-type="group").create-group Create group
+      button.remove-selected Remove selected
+      .selected-nodes No items selected
+    script.
+      var treeView = new TreeView(document.querySelector("main"));
 
-        createItem = (label) ->
-          itemElt = document.createElement 'li'
+        function createItem(label) {
+          itemElt = document.createElement("li");
 
-          iconElt = document.createElement 'div'
-          iconElt.classList.add 'icon'
-          itemElt.appendChild iconElt
+          iconElt = document.createElement("div");
+          iconElt.classList.add("icon");
+          itemElt.appendChild(iconElt);
 
-          spanElt = document.createElement 'span'
-          spanElt.textContent = label
-          itemElt.appendChild spanElt
-          
-          itemElt
+          spanElt = document.createElement("span");
+          spanElt.textContent = label;
+          itemElt.appendChild(spanElt);
 
-        createGroup = (label) ->
-          groupElt = document.createElement 'li'
+          return itemElt;
+        }
 
-          spanElt = document.createElement 'span'
-          spanElt.textContent = label
-          groupElt.appendChild spanElt
+        function createGroup(label) {
+          groupElt = document.createElement("li");
 
-          groupElt
+          spanElt = document.createElement("span");
+          spanElt.textContent = label;
+          groupElt.appendChild(spanElt);
 
-        for i in [0...3]
-          group = createGroup "Group #{i+1}"
-          treeView.append group, 'group'
+          return groupElt;
+        }
 
-          for j in [0...3]
-            item = createItem "Item #{i*3+j+1}"
-            treeView.append item, 'item', group
+        for (var i = 0; i < 3; i++) {
+          var group = createGroup("Group " + (i+1));
+          treeView.append(group, "group");
 
-        onClickCreate = (event) ->
-          type = event.target.dataset.type
-          label = prompt "Enter a name", ""
-          return if label.length == 0
-          node = if type == 'item' then createItem(label) else createGroup(label)
+          for (var j = 0; j < 3; j++) {
+            var item = createItem("Item " + (i*3+j+1));
+            treeView.append(item, "item", group);
+          }
+        }
 
-          parentNode = treeView.selectedNodes[0]
-          if parentNode? and ! parentNode.classList.contains 'group'
-            parentNode = if parentNode.parentElement.classList.contains('children') then parentNode.parentElement.previousSibling else null
+        function onClickCreate(event) {
+          var type = event.target.dataset.type;
+          var label = prompt("Enter a name", "");
+          if (label.length === 0) return;
+          var node = (type === "item") ? createItem(label) : createGroup(label);
 
-          treeView.append node, type, parentNode
-          return
+          var parentNode = treeView.selectedNodes[0];
+          if (parentNode != null && !parentNode.classList.contains("group")) {
+            parentNode = parentNode.parentElement.classList.contains("children") ? parentNode.parentElement.previousSibling : null;
+          }
 
-        document.querySelector('nav .CreateItem').addEventListener 'click', onClickCreate
-        document.querySelector('nav .CreateGroup').addEventListener 'click', onClickCreate
+          treeView.append(node, type, parentNode);
+        }
 
-        document.querySelector('nav .RemoveSelected').addEventListener 'click', ->
-          while treeView.selectedNodes.length > 0
-            treeView.remove treeView.selectedNodes[treeView.selectedNodes.length - 1]
-          return
+        document.querySelector("nav .create-item").addEventListener("click", onClickCreate);
+        document.querySelector("nav .create-group").addEventListener("click", onClickCreate);
 
-        treeView.on 'selectionChange', ->
-          document.querySelector('nav .SelectedNodes').textContent =
-            if treeView.selectedNodes.length > 1
-              "#{treeView.selectedNodes.length} items selected"
-            else if treeView.selectedNodes.length == 1
-              "1 item selected"
-            else
-              "No items selected"
-          return
+        document.querySelector("nav .remove-selected").addEventListener("click", function() {
+          while (treeView.selectedNodes.length > 0) {
+            treeView.remove(treeView.selectedNodes[treeView.selectedNodes.length - 1]);
+          }
+        });
 
-        treeView.on 'activate', ->
-          alert 'Activated "' + treeView.selectedNodes[0].querySelector('span').textContent + '"'
-          return
+        treeView.on("selectionChange", function() {
+          var text;
+          if (treeView.selectedNodes.length > 1) text = "" + treeView.selectedNodes.length + " items selected";
+          else if (treeView.selectedNodes.length === 1) text = "1 item selected";
+          else text = "No items selected";
+
+          document.querySelector("nav .selected-nodes").textContent = text;
+        });
+
+        treeView.on("activate", function() {
+          alert("Activated " + treeView.selectedNodes[0].querySelector("span").textContent);
+        });
