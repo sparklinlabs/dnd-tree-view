@@ -24,5 +24,5 @@ Make sure you have [Node.js](http://nodejs.org/) 0.10+ installed.
 
  * Clone the Mercurial repository from ``https://bitbucket.org/sparklinlabs/dnd-tree-view``
  * Run ``npm install`` once
- * Run ``gulp`` to build ``lib/TreeView.js`` from the CoffeeScript source.
+ * Run ``gulp`` to build ``lib/TreeView.js`` from the TypeScript source.
  * Run ``gulp watch`` to start a watcher that will rebuild it anytime you make a change.
