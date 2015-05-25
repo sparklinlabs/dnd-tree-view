@@ -1,3 +1,5 @@
 doc/
 src/
-*.coffee
+typings/
+*.ts
+tsd.json
