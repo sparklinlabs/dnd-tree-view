@@ -1,5 +1,5 @@
 doc/
 src/
 typings/
-*.ts
+gulpfile.js
 tsd.json
