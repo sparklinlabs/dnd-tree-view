@@ -138,12 +138,9 @@ class TreeView extends EventEmitter {
         }
       }
 
-      while (removedSelectedNodes.length > 0) {
-        let removedSelectedNode = removedSelectedNodes[removedSelectedNodes.length - 1];
+      for (let removedSelectedNode of removedSelectedNodes) {
         this.selectedNodes.splice(this.selectedNodes.indexOf(removedSelectedNode), 1);
-        if (this._firstSelectedNode === removedSelectedNode) {
-          this._firstSelectedNode = this.selectedNodes[0];
-        }
+        if (this._firstSelectedNode === removedSelectedNode) this._firstSelectedNode = this.selectedNodes[0];
       }
 
       element.parentElement.removeChild(childrenElement);
