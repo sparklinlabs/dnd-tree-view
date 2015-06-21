@@ -238,7 +238,7 @@ class TreeView extends EventEmitter {
     // NOTE: Required for Firefox to start the actual dragging
     // "try" is required for IE11 to not raise an exception
     try {
-      event.dataTransfer.setData("text/plain", null);
+      event.dataTransfer.setData("text/plain", (<any>element.dataset).dndText ? (<any>element.dataset).dndText : null);
     } catch(e) {}
 
     if (this.selectedNodes.indexOf(element) === -1) {
