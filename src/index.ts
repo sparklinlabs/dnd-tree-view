@@ -228,6 +228,10 @@ class TreeView extends EventEmitter {
 
   _onDoubleClick = (event: MouseEvent) => {
     if (this.selectedNodes.length !== 1) return;
+
+    let element = <HTMLElement>event.target;
+    if (element.className === "toggle") return;
+
     this.emit("activate");
   };
 
