@@ -31,6 +31,9 @@ class TreeView extends EventEmitter {
     this.treeRoot.addEventListener("click", this._onClick);
     this.treeRoot.addEventListener("dblclick", this._onDoubleClick);
     this.treeRoot.addEventListener("keydown", this._onKeyDown);
+    container.addEventListener("keydown", (event) => {
+      if (event.keyCode === 37 || event.keyCode === 39) event.preventDefault();
+    });
     
     if (this.dropCallback != null) {
       this.treeRoot.addEventListener("dragstart", this._onDragStart);
@@ -53,6 +56,14 @@ class TreeView extends EventEmitter {
     element.classList.add("selected");
 
     if (this.selectedNodes.length === 1) this._firstSelectedNode = element;
+  }
+  
+  scrollIntoView(element: HTMLLIElement) {
+    let elementRect = element.getBoundingClientRect();
+    let containerRect = this.treeRoot.parentElement.getBoundingClientRect();
+
+    if (elementRect.top < containerRect.top) element.scrollIntoView(true);
+    else if (elementRect.bottom > containerRect.bottom) element.scrollIntoView(false); 
   }
 
   append(element: HTMLLIElement, type: string, parentGroupElement: HTMLLIElement) {
@@ -314,6 +325,7 @@ class TreeView extends EventEmitter {
 
     this.clearSelection();
     this.addToSelection(node);
+    this.scrollIntoView(node);
   };
 
   _moveHorizontally = (offset: number) => {
@@ -338,6 +350,7 @@ class TreeView extends EventEmitter {
 
     this.clearSelection();
     this.addToSelection(node);
+    this.scrollIntoView(node);
   }
 
   _onDragStart = (event: DragEvent) => {
