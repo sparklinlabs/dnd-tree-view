@@ -1,7 +1,7 @@
 # dnd-tree-view
 
 Robust, stylable tree view widget for HTML5 apps.  
-Features cancellable drag'n'drop, suitable for networked apps.
+Features multiple item selection, keyboard navigation and cancellable drag'n'drop, suitable for networked apps.
 
 ## How to install
 
@@ -18,11 +18,15 @@ Check out the [live demo](http://sparklinlabs.bitbucket.org/dnd-tree-view/doc/de
  * Create a list item element (``<li>``), put whatever you want inside.
  * Use ``treeView.append(listItem, type, optionalParent)`` or ``treeView.insertBefore(listItem, type, referenceListItem)`` with ``type`` one of ``'item'`` or ``'group'``.
 
+The `TreeView` constructor takes an optional second `options` parameter. It supports the following keys:
+
+ * `dropCallback` should be `null` or a function of the form `(dropInfo: { target: HTMLLIElement, where: string }, orderedNodes: HTMLElement[]) => boolean`. It'll be called when a drag'n'drop operation ends and must return whether to proceed with the reparenting/reordering or not.
+ * `multipleSelection` is a boolean indicating whether to enable multiple item selection or not.
+
 ## Building from source
 
-Make sure you have [Node.js](http://nodejs.org/) 0.10+ installed.
+Make sure you have a recent version of [Node.js](http://nodejs.org/) installed.
 
  * Clone the Mercurial repository from ``https://bitbucket.org/sparklinlabs/dnd-tree-view``
  * Run ``npm install`` once
- * Run ``gulp`` to build ``lib/TreeView.js`` from the TypeScript source.
- * Run ``gulp watch`` to start a watcher that will rebuild it anytime you make a change.
+ * Run ``gulp`` to build ``lib/TreeView.js`` from the TypeScript source

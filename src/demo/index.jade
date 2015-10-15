@@ -11,7 +11,7 @@ html
       button.remove-selected Remove selected
       .selected-nodes No items selected
     script.
-      var treeView = new TreeView(document.querySelector("main"));
+      var treeView = new TreeView(document.querySelector("main"), { dropCallback: function(dropInfo, orderedNodes) { return true; } });
 
         function createItem(label) {
           itemElt = document.createElement("li");

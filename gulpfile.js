@@ -14,17 +14,14 @@ gulp.task("stylus", function() {
   return gulp.src("./src/demo/*.styl").pipe(stylus({use: [ nib() ], errors: true})).pipe(gulp.dest("./doc/demo"));
 });
 
+
 // TypeScript
 var ts = require("gulp-typescript");
+var tsProject = ts.createProject("src/tsconfig.json");
+
 gulp.task("typescript", function() {
-  var tsResult = gulp.src([ "src/**/*.ts", "!node_modules/**" ]).pipe(ts({
-    typescript: require("typescript"),
-    declarationFiles: false,
-    module: "commonjs",
-    target: "ES5",
-    noImplicitAny: true
-  }));
-  return tsResult.js.pipe(gulp.dest("./src"));
+  var tsResult = tsProject.src().pipe(ts(tsProject));
+  return tsResult.js.pipe(gulp.dest("src/"));
 });
 
 // Browserify
