@@ -328,6 +328,7 @@ class TreeView extends EventEmitter {
     this.clearSelection();
     this.addToSelection(node);
     this.scrollIntoView(node);
+    this.emit("selectionChange");
   };
 
   _moveHorizontally = (offset: number) => {
@@ -353,6 +354,7 @@ class TreeView extends EventEmitter {
     this.clearSelection();
     this.addToSelection(node);
     this.scrollIntoView(node);
+    this.emit("selectionChange");
   }
 
   _onDragStart = (event: DragEvent) => {
