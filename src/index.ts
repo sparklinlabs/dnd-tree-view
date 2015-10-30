@@ -259,6 +259,8 @@ class TreeView extends EventEmitter {
   };
   
   _onKeyDown = (event: KeyboardEvent) => {
+    if (document.activeElement !== this.treeRoot) return;
+    
     if (this._firstSelectedNode == null) {
       // TODO: Remove once we have this._focusedNode
       if (event.keyCode === 40) {
