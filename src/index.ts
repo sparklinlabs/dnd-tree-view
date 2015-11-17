@@ -300,7 +300,7 @@ class TreeView extends EventEmitter {
         let target = <HTMLElement>node.previousElementSibling;
 
         while (target.classList.contains("children")) {
-          if (!target.previousElementSibling.classList.contains("collapsed")) target = <HTMLElement>target.lastElementChild;
+          if (!target.previousElementSibling.classList.contains("collapsed") && target.childElementCount > 0) target = <HTMLElement>target.lastElementChild;
           else target = <HTMLElement>target.previousElementSibling;
         }
         node = <HTMLLIElement>target;
@@ -308,7 +308,7 @@ class TreeView extends EventEmitter {
       else return;
     } else {
       if (node.classList.contains("group")) {
-        if (!node.classList.contains("collapsed")) node = <HTMLLIElement>node.nextElementSibling.firstElementChild;
+        if (!node.classList.contains("collapsed") && node.nextElementSibling.childElementCount > 0) node = <HTMLLIElement>node.nextElementSibling.firstElementChild;
         else node = <HTMLLIElement>node.nextElementSibling.nextElementSibling;
       } else {
         if (node.nextElementSibling != null) node = <HTMLLIElement>node.nextElementSibling;
