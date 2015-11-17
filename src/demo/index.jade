@@ -46,6 +46,12 @@ html
             treeView.append(item, "item", group);
           }
         }
+        
+        group = createGroup("Empty Group 1");
+        treeView.append(group, "group", document.querySelector(".group"));
+        
+        group = createGroup("Empty Group 2");
+        treeView.append(group, "group", document.querySelector(".group:last-child"));
 
         function onClickCreate(event) {
           var type = event.target.dataset.type;

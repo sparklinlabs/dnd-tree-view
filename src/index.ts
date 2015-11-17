@@ -307,12 +307,18 @@ class TreeView extends EventEmitter {
       } else if (node.parentElement.classList.contains("children")) node = <HTMLLIElement>node.parentElement.previousElementSibling;
       else return;
     } else {
+      let walkUp = false;
       if (node.classList.contains("group")) {
         if (!node.classList.contains("collapsed") && node.nextElementSibling.childElementCount > 0) node = <HTMLLIElement>node.nextElementSibling.firstElementChild;
-        else node = <HTMLLIElement>node.nextElementSibling.nextElementSibling;
+        else if (node.nextElementSibling.nextElementSibling != null) node = <HTMLLIElement>node.nextElementSibling.nextElementSibling;
+        else walkUp = true;
       } else {
         if (node.nextElementSibling != null) node = <HTMLLIElement>node.nextElementSibling;
-        else if (node.parentElement.classList.contains("children")) {
+        else walkUp = true;
+      }
+      
+      if (walkUp) {
+        if (node.parentElement.classList.contains("children")) {
           let target = <HTMLElement>node.parentElement;
           while (target.nextElementSibling == null) {
             target = target.parentElement;
