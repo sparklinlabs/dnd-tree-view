@@ -265,6 +265,7 @@ class TreeView extends EventEmitter {
       // TODO: Remove once we have this._focusedNode
       if (event.keyCode === 40) {
         this.addToSelection(<HTMLLIElement>this.treeRoot.firstElementChild);
+        this.emit("selectionChange");
         event.preventDefault();
       }
       return;
