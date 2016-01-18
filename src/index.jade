@@ -1,9 +1,15 @@
 doctype html
 html
   head
-    link(rel="stylesheet",href="style.css")
-    script(src="../../lib/TreeView.js")
+    link(rel="stylesheet",href="index.css")
+    script(src="TreeView.js")
   body
+    header
+      h1
+        a(href="https://github.com/sparklinlabs") sparklinlabs
+        |  / 
+        a(href="https://github.com/sparklinlabs/dnd-tree-view") dnd-tree-view
+      p An HTML5 tree view widget with drag'n'drop support
     main
     nav
       button(data-type="item").create-item Create item

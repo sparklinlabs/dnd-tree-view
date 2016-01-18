@@ -1,5 +1,7 @@
-doc/
 src/
+lib/*
+!lib/TreeView.js
+!lib/TreeView.d.ts
 typings/
-gulpfile.js
+build.js
 tsd.json

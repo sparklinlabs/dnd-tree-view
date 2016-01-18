@@ -1,7 +1,0 @@
-syntax: glob
-node_modules/*
-*.sublime-*
-doc/demo/*.html
-doc/demo/*.css
-lib/*.js
-src/*.js
