@@ -1,7 +1,7 @@
 {
   "name": "dnd-tree-view",
   "description": "HTML5 tree view widget",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "author": "Elisée Maurer <elisee@sparklinlabs.com>",
   "repository": {
     "type": "git",
