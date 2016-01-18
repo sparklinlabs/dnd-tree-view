@@ -1,0 +1,140 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  font-family: sans-serif;
+  font-size: 14px;
+  display: flex;
+  flex-flow: column;
+  background-color: #eee;
+}
+a {
+  color: #00f;
+}
+a:hover {
+  text-decoration: none;
+}
+header {
+  padding: 1em;
+  display: flex;
+  align-items: center;
+}
+header h1,
+header p {
+  margin: 0;
+}
+header p {
+  margin-left: 1em;
+}
+main {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #888;
+  flex: 1;
+  margin: 0 1em;
+  overflow-y: auto;
+}
+nav {
+  display: flex;
+  margin: 0.5em 1em 1em 1em;
+  align-items: center;
+}
+nav button {
+  margin-right: 0.5em;
+  padding: 0.5em;
+}
+ol.tree {
+  position: absolute;
+  list-style: none;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.25em 0.25em 2em 0.25em;
+  width: 100%;
+  min-height: 100%;
+}
+ol.tree * {
+  -webkit-user-select: none;
+}
+ol.tree ol {
+  list-style: none;
+  margin: 0;
+  padding-left: 24px;
+}
+ol.tree ol:last-of-type.drop-below {
+  border-bottom: 1px solid #888;
+  padding-bottom: 0;
+}
+ol.tree li.item,
+ol.tree li.group {
+  background-clip: border-box;
+  height: 28px;
+  display: flex;
+  padding: 1px;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+ol.tree li.item > .icon,
+ol.tree li.group > .icon,
+ol.tree li.item > .toggle,
+ol.tree li.group > .toggle {
+  margin: -1px;
+  width: 24px;
+  height: 24px;
+}
+ol.tree li.item span,
+ol.tree li.group span {
+  align-self: center;
+  padding: 0.25em;
+}
+ol.tree li.item:hover,
+ol.tree li.group:hover {
+  background-color: #eee;
+}
+ol.tree li.item.drop-above,
+ol.tree li.group.drop-above {
+  border-top: 1px solid #888;
+  padding-top: 0;
+}
+ol.tree li.item.drop-inside,
+ol.tree li.group.drop-inside {
+  border: 1px solid #888;
+  padding: 0;
+}
+ol.tree li.item.selected,
+ol.tree li.group.selected {
+  background: #beddf4;
+}
+ol.tree li.item > .icon {
+  background-image: url("item.svg");
+}
+ol.tree li.item.drop-below {
+  border-bottom: 1px solid #888;
+  padding-bottom: 0;
+}
+ol.tree li.group {
+  color: #444;
+}
+ol.tree li.group > .toggle {
+  background-image: url("group-open.svg");
+  cursor: pointer;
+}
+ol.tree li.group.drop-below + ol {
+  border-bottom: 1px solid #888;
+}
+ol.tree li.group.drop-below + ol:empty {
+  margin-top: -1px;
+  pointer-events: none;
+}
+ol.tree li.group.collapsed > .toggle {
+  background-image: url("group-closed.svg");
+}
+ol.tree li.group.collapsed + ol > ol,
+ol.tree li.group.collapsed + ol > li {
+  display: none;
+}
