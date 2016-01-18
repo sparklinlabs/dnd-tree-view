@@ -5,18 +5,16 @@ Features multiple item selection, keyboard navigation and cancellable drag'n'dro
 
 ## How to install
 
-```
-npm install dnd-tree-view
-```
+    npm install dnd-tree-view
 
 ## Usage
 
 Check out the [live demo](http://sparklinlabs.bitbucket.org/dnd-tree-view/doc/demo/) and its [source code](https://bitbucket.org/sparklinlabs/dnd-tree-view/src/tip/src/demo/).
 
- * Include ``TreeView.js`` in your page.
- * Create a container element, call ``treeView = new TreeView(container)``.
- * Create a list item element (``<li>``), put whatever you want inside.
- * Use ``treeView.append(listItem, type, optionalParent)`` or ``treeView.insertBefore(listItem, type, referenceListItem)`` with ``type`` one of ``'item'`` or ``'group'``.
+ * Include `TreeView.js` in your page.
+ * Create a container element, call `treeView = new TreeView(container)`.
+ * Create a list item element (`<li>`), put whatever you want inside.
+ * Use `treeView.append(listItem, type, optionalParent)` or `treeView.insertBefore(listItem, type, referenceListItem)` with `type` one of `'item'` or `'group'`.
 
 The `TreeView` constructor takes an optional second `options` parameter. It supports the following keys:
 
@@ -27,6 +25,6 @@ The `TreeView` constructor takes an optional second `options` parameter. It supp
 
 Make sure you have a recent version of [Node.js](http://nodejs.org/) installed.
 
- * Clone the Mercurial repository from ``https://bitbucket.org/sparklinlabs/dnd-tree-view``
- * Run ``npm install`` once
- * Run ``gulp`` to build ``lib/TreeView.js`` from the TypeScript source
+ * Clone the repository from `https://github.com/sparklinlabs/dnd-tree-view`
+ * Run `npm install` once
+ * Run `gulp` to build `lib/TreeView.js` from the TypeScript source

@@ -16,10 +16,10 @@
     "drag'n'drop"
   ],
   "repository": {
-    "type": "hg",
-    "url": "https://bitbucket.org/sparklinlabs/dnd-tree-view"
+    "type": "git",
+    "url": "https://github.com/sparklinlabs/dnd-tree-view"
   },
-  "license": "MIT",
+  "license": "ISC",
   "devDependencies": {
     "browserify": "^10.1.3",
     "gulp": "^3.8.11",
