@@ -63,7 +63,7 @@ class TreeView extends EventEmitter {
     let containerRect = this.treeRoot.parentElement.getBoundingClientRect();
 
     if (elementRect.top < containerRect.top) element.scrollIntoView(true);
-    else if (elementRect.bottom > containerRect.bottom) element.scrollIntoView(false); 
+    else if (elementRect.bottom > containerRect.bottom) element.scrollIntoView(false);
   }
 
   append(element: HTMLLIElement, type: string, parentGroupElement?: HTMLLIElement) {
@@ -362,7 +362,7 @@ class TreeView extends EventEmitter {
     this.addToSelection(node);
     this.scrollIntoView(node);
     this.emit("selectionChange");
-  }
+  };
 
   _onDragStart = (event: DragEvent) => {
     let element = <HTMLLIElement>event.target;
@@ -373,7 +373,7 @@ class TreeView extends EventEmitter {
     // "try" is required for IE11 to not raise an exception
     try {
       event.dataTransfer.setData("text/plain", (<any>element.dataset).dndText ? (<any>element.dataset).dndText : null);
-    } catch(e) {}
+    } catch(e) { /* Ignore */ }
 
     if (this.selectedNodes.indexOf(element) === -1) {
       this.clearSelection();
@@ -382,7 +382,7 @@ class TreeView extends EventEmitter {
     }
 
     return true;
-  }
+  };
 
   _getDropInfo(event: DragEvent): { target: HTMLLIElement, where: string } {
     let element = <HTMLElement>event.target;
