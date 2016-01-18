@@ -1,19 +1,26 @@
 /// <reference path="../typings/tsd.d.ts" />
-/// <reference path="../lib/TreeView.d.ts" />
 
 import { EventEmitter } from "events";
+
+interface DropCallback {
+  (dropInfo: {
+    target: HTMLLIElement;
+    where: string /* "above", "inside" or "below" */;
+  },
+  orderedNodes: HTMLLIElement[]): boolean;
+}
 
 class TreeView extends EventEmitter {
 
   treeRoot: HTMLOListElement;
   selectedNodes: HTMLLIElement[];
-  dropCallback: TreeView.DropCallback;
+  dropCallback: DropCallback;
   multipleSelection: boolean;
 
   _firstSelectedNode: HTMLLIElement;
   _hasDraggedOverAfterLeaving: boolean;
 
-  constructor(container: HTMLDivElement, options?: { dropCallback?: TreeView.DropCallback, multipleSelection?: boolean }) {
+  constructor(container: HTMLDivElement, options?: { dropCallback?: DropCallback, multipleSelection?: boolean }) {
     super();
 
     if (options == null) options = {};
