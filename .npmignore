@@ -1,7 +1,6 @@
 src/
 lib/*
 !lib/TreeView.js
-!lib/TreeView.d.ts
 typings/
 build.js
 tsd.json
