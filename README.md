@@ -9,7 +9,7 @@ Features multiple item selection, keyboard navigation and cancellable drag'n'dro
 
 ## Usage
 
-Check out the [live demo](http://sparklinlabs.github.io/dnd-tree-view/) and its [source code](https://github.com/sparklinlabs/dnd-tree-view/tree/master/src/demo).
+Check out the [live demo](http://sparklinlabs.github.io/dnd-tree-view/) and its [source code](https://github.com/sparklinlabs/dnd-tree-view/blob/master/src/index.jade).
 
  * Include `TreeView.js` in your page.
  * Create a container element, call `treeView = new TreeView(container)`.
@@ -21,7 +21,7 @@ The `TreeView` constructor takes an optional second `options` parameter. It supp
  * `dropCallback` should be `null` or a function of the form `(dropInfo: { target: HTMLLIElement, where: string }, orderedNodes: HTMLElement[]) => boolean`. It'll be called when a drag'n'drop operation ends and must return whether to proceed with the reparenting/reordering or not.
  * `multipleSelection` is a boolean indicating whether to enable multiple item selection or not.
 
-See [TreeView.d.ts](https://github.com/sparklinlabs/dnd-tree-view/blob/master/lib/TreeView.d.ts) for the full API.
+See [TreeView.d.ts](https://github.com/sparklinlabs/dnd-tree-view/blob/master/index.d.ts) for the full API.
 
 ## Building from source
 
