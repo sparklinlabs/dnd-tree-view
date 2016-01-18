@@ -1,15 +1,15 @@
 declare class TreeView {
-  treeRoot: HTMLOListElement;
-  selectedNodes: HTMLLIElement[];
+    treeRoot: HTMLOListElement;
+    selectedNodes: HTMLLIElement[];
 
-  constructor(container: HTMLElement, options?: { dropCallback?: TreeView.DropCallback, multipleSelection?: boolean });
-  clearSelection(): void;
-  addToSelection(element: HTMLLIElement): void;
-  append(element: HTMLLIElement, type: string /* "item" or "group" */, parentGroupElement?: HTMLElement): void;
-  insertBefore(element: HTMLLIElement, type: string, referenceElement: HTMLLIElement): void;
-  insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement): void;
-  remove(element: HTMLLIElement): void;
-}
+    constructor(container: HTMLElement, options?: { dropCallback?: TreeView.DropCallback, multipleSelection?: boolean });
+    clearSelection(): void;
+    addToSelection(element: HTMLLIElement): void;
+    append(element: HTMLLIElement, type: string /* "item" or "group" */, parentGroupElement?: HTMLElement): void;
+    insertBefore(element: HTMLLIElement, type: string, referenceElement: HTMLLIElement): void;
+    insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement): void;
+    remove(element: HTMLLIElement): void;
+  }
 
 declare namespace TreeView {
   interface DropCallback {
@@ -19,4 +19,8 @@ declare namespace TreeView {
     },
     orderedNodes: HTMLLIElement[]): boolean;
   }
+}
+
+declare module "dnd-tree-view" {
+  export = TreeView;
 }
