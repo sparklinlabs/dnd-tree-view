@@ -81,7 +81,7 @@ class TreeView extends EventEmitter {
 
     if (parentGroupElement != null) {
       if (parentGroupElement.tagName !== "LI" || !parentGroupElement.classList.contains("group")) throw new Error("Invalid parent group");
-      siblingsElt = <HTMLOListElement>parentGroupElement.nextSibling;
+      siblingsElt = parentGroupElement.nextSibling as HTMLOListElement;
     } else {
       siblingsElt = this.treeRoot;
     }
@@ -99,7 +99,7 @@ class TreeView extends EventEmitter {
         childrenElt.classList.add("children");
       }
     } else if (type === "group") {
-      childrenElt = <HTMLOListElement>element.nextSibling;
+      childrenElt = element.nextSibling as HTMLOListElement;
     }
 
     siblingsElt.appendChild(element);
@@ -128,7 +128,7 @@ class TreeView extends EventEmitter {
         childrenElt.classList.add("children");
       }
     } else if (type === "group") {
-      childrenElt = <HTMLOListElement>element.nextSibling;
+      childrenElt = element.nextSibling as HTMLOListElement;
     }
 
     referenceElement.parentElement.insertBefore(element, referenceElement);
@@ -143,8 +143,8 @@ class TreeView extends EventEmitter {
     if (index != null) {
       referenceElt =
         (parentElement != null)
-          ? <HTMLLIElement>(<HTMLOListElement>parentElement.nextSibling).querySelector(`:scope > li:nth-of-type(${index + 1})`)
-          : <HTMLLIElement>this.treeRoot.querySelector(`:scope > li:nth-of-type(${index + 1})`);
+          ? (parentElement.nextSibling as HTMLOListElement).querySelector(`:scope > li:nth-of-type(${index + 1})`) as HTMLLIElement
+          : this.treeRoot.querySelector(`:scope > li:nth-of-type(${index + 1})`) as HTMLLIElement;
     }
 
     if (referenceElt != null) this.insertBefore(element, type, referenceElt);
@@ -157,7 +157,7 @@ class TreeView extends EventEmitter {
     if (this._firstSelectedNode === element) this._firstSelectedNode = this.selectedNodes[0];
 
     if (element.classList.contains("group")) {
-      let childrenElement = <HTMLElement>element.nextSibling;
+      let childrenElement = element.nextSibling as HTMLElement;
 
       let removedSelectedNodes: HTMLLIElement[] = [];
       for (let selectedNode of this.selectedNodes) {
@@ -179,7 +179,7 @@ class TreeView extends EventEmitter {
 
   _onClick = (event: MouseEvent) => {
     // Toggle groups
-    let element = <HTMLElement>event.target;
+    let element = event.target as HTMLElement;
 
     if (element.className === "toggle") {
       if (element.parentElement.tagName === "LI" && element.parentElement.classList.contains("group")) {
@@ -201,13 +201,13 @@ class TreeView extends EventEmitter {
       selectionChanged = true;
     }
 
-    let ancestorElement = <HTMLElement>event.target;
+    let ancestorElement = event.target as HTMLElement;
     while (ancestorElement.tagName !== "LI" || (!ancestorElement.classList.contains("item") && !ancestorElement.classList.contains("group"))) {
       if (ancestorElement === this.treeRoot) return selectionChanged;
       ancestorElement = ancestorElement.parentElement;
     }
 
-    let element = <HTMLLIElement>ancestorElement;
+    let element = ancestorElement as HTMLLIElement;
 
     if (this.selectedNodes.length > 0 && this.selectedNodes[0].parentElement !== element.parentElement) {
       return selectionChanged;
@@ -219,17 +219,17 @@ class TreeView extends EventEmitter {
       let inside = false;
 
       for (let i = 0; i < element.parentElement.children.length; i++) {
-        let child = <HTMLElement>element.parentElement.children[i];
+        let child = element.parentElement.children[i] as HTMLElement;
 
         if (child === startElement || child === element) {
           if (inside || startElement === element ) {
-            elements.push(<HTMLLIElement>child);
+            elements.push(child as HTMLLIElement);
             break;
           }
           inside = true;
         }
 
-        if (inside && child.tagName === "LI") elements.push(<HTMLLIElement>child);
+        if (inside && child.tagName === "LI") elements.push(child as HTMLLIElement);
       }
 
       this.clearSelection();
@@ -259,7 +259,7 @@ class TreeView extends EventEmitter {
   _onDoubleClick = (event: MouseEvent) => {
     if (this.selectedNodes.length !== 1) return;
 
-    let element = <HTMLElement>event.target;
+    let element = event.target as HTMLElement;
     if (element.className === "toggle") return;
 
     this.emit("activate");
@@ -271,7 +271,7 @@ class TreeView extends EventEmitter {
     if (this._firstSelectedNode == null) {
       // TODO: Remove once we have this._focusedNode
       if (event.keyCode === 40) {
-        this.addToSelection(<HTMLLIElement>this.treeRoot.firstElementChild);
+        this.addToSelection(this.treeRoot.firstElementChild as HTMLLIElement);
         this.emit("selectionChange");
         event.preventDefault();
       }
@@ -305,34 +305,34 @@ class TreeView extends EventEmitter {
 
     if (offset === -1) {
       if (node.previousElementSibling != null) {
-        let target = <HTMLElement>node.previousElementSibling;
+        let target = node.previousElementSibling as HTMLElement;
 
         while (target.classList.contains("children")) {
-          if (!target.previousElementSibling.classList.contains("collapsed") && target.childElementCount > 0) target = <HTMLElement>target.lastElementChild;
-          else target = <HTMLElement>target.previousElementSibling;
+          if (!target.previousElementSibling.classList.contains("collapsed") && target.childElementCount > 0) target = target.lastElementChild as HTMLElement;
+          else target = target.previousElementSibling as HTMLElement;
         }
-        node = <HTMLLIElement>target;
-      } else if (node.parentElement.classList.contains("children")) node = <HTMLLIElement>node.parentElement.previousElementSibling;
+        node = target as HTMLLIElement;
+      } else if (node.parentElement.classList.contains("children")) node = node.parentElement.previousElementSibling as HTMLLIElement;
       else return;
     } else {
       let walkUp = false;
       if (node.classList.contains("group")) {
-        if (!node.classList.contains("collapsed") && node.nextElementSibling.childElementCount > 0) node = <HTMLLIElement>node.nextElementSibling.firstElementChild;
-        else if (node.nextElementSibling.nextElementSibling != null) node = <HTMLLIElement>node.nextElementSibling.nextElementSibling;
+        if (!node.classList.contains("collapsed") && node.nextElementSibling.childElementCount > 0) node = node.nextElementSibling.firstElementChild as HTMLLIElement;
+        else if (node.nextElementSibling.nextElementSibling != null) node = node.nextElementSibling.nextElementSibling as HTMLLIElement;
         else walkUp = true;
       } else {
-        if (node.nextElementSibling != null) node = <HTMLLIElement>node.nextElementSibling;
+        if (node.nextElementSibling != null) node = node.nextElementSibling as HTMLLIElement;
         else walkUp = true;
       }
 
       if (walkUp) {
         if (node.parentElement.classList.contains("children")) {
-          let target = <HTMLElement>node.parentElement;
+          let target = node.parentElement as HTMLElement;
           while (target.nextElementSibling == null) {
             target = target.parentElement;
             if (!target.classList.contains("children")) return;
           }
-          node = <HTMLLIElement>target.nextElementSibling;
+          node = target.nextElementSibling as HTMLLIElement;
         } else return;
       }
     }
@@ -352,14 +352,14 @@ class TreeView extends EventEmitter {
     if (offset === -1) {
       if (!node.classList.contains("group") || node.classList.contains("collapsed")) {
         if (!node.parentElement.classList.contains("children")) return;
-        node = <HTMLLIElement>node.parentElement.previousElementSibling;
+        node = node.parentElement.previousElementSibling as HTMLLIElement;
       } else if (node.classList.contains("group")) {
         node.classList.add("collapsed");
       }
     } else {
       if (node.classList.contains("group")) {
         if (node.classList.contains("collapsed")) node.classList.remove("collapsed");
-        else node = <HTMLLIElement>node.nextSibling.firstChild;
+        else node = node.nextSibling.firstChild as HTMLLIElement;
       }
     }
 
@@ -372,14 +372,14 @@ class TreeView extends EventEmitter {
   };
 
   _onDragStart = (event: DragEvent) => {
-    let element = <HTMLLIElement>event.target;
+    let element = event.target as HTMLLIElement;
     if (element.tagName !== "LI") return false;
     if (!element.classList.contains("item") && !element.classList.contains("group")) return false;
 
     // NOTE: Required for Firefox to start the actual dragging
     // "try" is required for IE11 to not raise an exception
     try {
-      event.dataTransfer.setData("text/plain", (<any>element.dataset).dndText ? (<any>element.dataset).dndText : null);
+      event.dataTransfer.setData("text/plain", element.dataset["dndText"] ? element.dataset["dndText"] : null);
     } catch(e) { /* Ignore */ }
 
     if (this.selectedNodes.indexOf(element) === -1) {
@@ -392,16 +392,16 @@ class TreeView extends EventEmitter {
   };
 
   _getDropInfo(event: DragEvent): { target: HTMLLIElement, where: string } {
-    let element = <HTMLElement>event.target;
+    let element = event.target as HTMLElement;
 
     if (element.tagName === "OL" && element.classList.contains("children")) {
       element = element.parentElement;
     }
 
     if (element === this.treeRoot) {
-      element = <HTMLElement>element.lastChild;
-      if (element.tagName === "OL") element = <HTMLElement>element.previousSibling;
-      return { target: <HTMLLIElement>element, where: "below" };
+      element = element.lastChild as HTMLElement;
+      if (element.tagName === "OL") element = element.previousSibling as HTMLElement;
+      return { target: element as HTMLLIElement, where: "below" };
     }
 
     while (element.tagName !== "LI" || (!element.classList.contains("item") && !element.classList.contains("group"))) {
@@ -411,16 +411,16 @@ class TreeView extends EventEmitter {
 
     let where = this._getInsertionPoint(element, event.pageY);
     if (where === "below") {
-      if (element.classList.contains("item") && element.nextSibling != null && (<HTMLElement>element.nextSibling).tagName === "LI") {
-        element = <HTMLElement>element.nextSibling;
+      if (element.classList.contains("item") && element.nextSibling != null && (element.nextSibling as HTMLElement).tagName === "LI") {
+        element = element.nextSibling as HTMLElement;
         where = "above";
-      } else if (element.classList.contains("group") && element.nextSibling.nextSibling != null && (<HTMLElement>element.nextSibling.nextSibling).tagName === "LI") {
-        element = <HTMLElement>element.nextSibling.nextSibling;
+      } else if (element.classList.contains("group") && element.nextSibling.nextSibling != null && (element.nextSibling.nextSibling as HTMLElement).tagName === "LI") {
+        element = element.nextSibling.nextSibling as HTMLElement;
         where = "above";
       }
     }
 
-    return { target: <HTMLLIElement>element, where };
+    return { target: element as HTMLLIElement, where };
   }
 
   _getInsertionPoint(element: HTMLElement, y: number) {
@@ -428,7 +428,7 @@ class TreeView extends EventEmitter {
     let offset = y - rect.top;
 
     if (offset < rect.height / 4) return "above";
-    if (offset > rect.height * 3 / 4) return (element.classList.contains("group") && (<HTMLElement>element.nextSibling).childElementCount > 0) ? "inside" : "below";
+    if (offset > rect.height * 3 / 4) return (element.classList.contains("group") && (element.nextSibling as HTMLElement).childElementCount > 0) ? "inside" : "below";
     return element.classList.contains("item") ? "below" : "inside";
   }
 
@@ -441,7 +441,7 @@ class TreeView extends EventEmitter {
     if (dropInfo.where === "inside" && this.selectedNodes.indexOf(dropInfo.target) !== -1) return false;
 
     for (let selectedNode of this.selectedNodes) {
-      if (selectedNode.classList.contains("group") && (<HTMLElement>selectedNode.nextSibling).contains(dropInfo.target)) return false;
+      if (selectedNode.classList.contains("group") && (selectedNode.nextSibling as HTMLElement).contains(dropInfo.target)) return false;
     }
 
     this._hasDraggedOverAfterLeaving = true;
@@ -451,13 +451,13 @@ class TreeView extends EventEmitter {
   };
 
   _clearDropClasses() {
-    let dropAbove = <HTMLElement>this.treeRoot.querySelector(".drop-above");
+    let dropAbove = this.treeRoot.querySelector(".drop-above") as HTMLElement;
     if (dropAbove != null) dropAbove.classList.remove("drop-above");
 
-    let dropInside = <HTMLElement>this.treeRoot.querySelector(".drop-inside");
+    let dropInside = this.treeRoot.querySelector(".drop-inside") as HTMLElement;
     if (dropInside != null) dropInside.classList.remove("drop-inside");
 
-    let dropBelow = <HTMLElement>this.treeRoot.querySelector(".drop-below");
+    let dropBelow = this.treeRoot.querySelector(".drop-below") as HTMLElement;
     if (dropBelow != null) dropBelow.classList.remove("drop-below");
   }
 
@@ -479,7 +479,7 @@ class TreeView extends EventEmitter {
     let orderedNodes: HTMLLIElement[] = [];
 
     for (let i = 0; i < children.length; i++) {
-      let child = <HTMLLIElement>children[i];
+      let child = children[i] as HTMLLIElement;
       if (this.selectedNodes.indexOf(child) !== -1) orderedNodes.push(child);
     }
 
@@ -493,14 +493,14 @@ class TreeView extends EventEmitter {
       case "inside":
         if (!dropInfo.target.classList.contains("group")) return;
 
-        newParent = <HTMLElement>dropInfo.target.nextSibling;
-        referenceElt = <HTMLElement>newParent.firstChild;
+        newParent = dropInfo.target.nextSibling as HTMLElement;
+        referenceElt = newParent.firstChild as HTMLElement;
         break;
 
       case "below":
         newParent = dropInfo.target.parentElement;
-        referenceElt = <HTMLElement>dropInfo.target.nextSibling;
-        if (referenceElt != null && referenceElt.tagName === "OL") referenceElt = <HTMLElement>referenceElt.nextSibling;
+        referenceElt = dropInfo.target.nextSibling as HTMLElement;
+        if (referenceElt != null && referenceElt.tagName === "OL") referenceElt = referenceElt.nextSibling as HTMLElement;
         break;
 
       case "above":
@@ -513,21 +513,21 @@ class TreeView extends EventEmitter {
 
     for (let selectedNode of orderedNodes) {
       if (selectedNode.classList.contains("group")) {
-        draggedChildren = <HTMLElement>selectedNode.nextSibling;
+        draggedChildren = selectedNode.nextSibling as HTMLElement;
         draggedChildren.parentElement.removeChild(draggedChildren);
       }
 
       if (referenceElt === selectedNode) {
-        referenceElt = <HTMLElement>selectedNode.nextSibling;
+        referenceElt = selectedNode.nextSibling as HTMLElement;
       }
 
       selectedNode.parentElement.removeChild(selectedNode);
       newParent.insertBefore(selectedNode, referenceElt);
-      referenceElt = <HTMLElement>selectedNode.nextSibling;
+      referenceElt = selectedNode.nextSibling as HTMLElement;
 
       if (draggedChildren != null) {
         newParent.insertBefore(draggedChildren, referenceElt);
-        referenceElt = <HTMLElement>draggedChildren.nextSibling;
+        referenceElt = draggedChildren.nextSibling as HTMLElement;
       }
     }
   };
