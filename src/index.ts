@@ -15,7 +15,7 @@ class TreeView extends EventEmitter {
 
   constructor(container: HTMLDivElement, options?: { dropCallback?: TreeView.DropCallback, multipleSelection?: boolean }) {
     super();
-    
+
     if (options == null) options = {};
 
     this.multipleSelection = (options.multipleSelection != null) ? options.multipleSelection : true;
@@ -34,7 +34,7 @@ class TreeView extends EventEmitter {
     container.addEventListener("keydown", (event) => {
       if (event.keyCode === 37 || event.keyCode === 39) event.preventDefault();
     });
-    
+
     if (this.dropCallback != null) {
       this.treeRoot.addEventListener("dragstart", this._onDragStart);
       this.treeRoot.addEventListener("dragover", this._onDragOver);
@@ -57,7 +57,7 @@ class TreeView extends EventEmitter {
 
     if (this.selectedNodes.length === 1) this._firstSelectedNode = element;
   }
-  
+
   scrollIntoView(element: HTMLLIElement) {
     let elementRect = element.getBoundingClientRect();
     let containerRect = this.treeRoot.parentElement.getBoundingClientRect();
@@ -66,7 +66,7 @@ class TreeView extends EventEmitter {
     else if (elementRect.bottom > containerRect.bottom) element.scrollIntoView(false); 
   }
 
-  append(element: HTMLLIElement, type: string, parentGroupElement: HTMLLIElement) {
+  append(element: HTMLLIElement, type: string, parentGroupElement?: HTMLLIElement) {
     if (type !== "item" && type !== "group") throw new Error("Invalid type");
 
     let childrenElt: HTMLOListElement;
@@ -130,7 +130,7 @@ class TreeView extends EventEmitter {
     return element;
   }
 
-  insertAt(element: HTMLLIElement, type: string, index: number, parentElement: HTMLLIElement) {
+  insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement) {
     let referenceElt: HTMLLIElement;
 
     if (index != null) {
@@ -199,7 +199,7 @@ class TreeView extends EventEmitter {
       if (ancestorElement === this.treeRoot) return selectionChanged;
       ancestorElement = ancestorElement.parentElement;
     }
-    
+
     let element = <HTMLLIElement>ancestorElement;
 
     if (this.selectedNodes.length > 0 && this.selectedNodes[0].parentElement !== element.parentElement) {
@@ -257,10 +257,10 @@ class TreeView extends EventEmitter {
 
     this.emit("activate");
   };
-  
+
   _onKeyDown = (event: KeyboardEvent) => {
     if (document.activeElement !== this.treeRoot) return;
-    
+
     if (this._firstSelectedNode == null) {
       // TODO: Remove once we have this._focusedNode
       if (event.keyCode === 40) {
@@ -277,21 +277,21 @@ class TreeView extends EventEmitter {
         this._moveVertically(event.keyCode === 40 ? 1 : -1);
         event.preventDefault();
         break;
-      
+
       case 37: // left
       case 39: // right
         this._moveHorizontally(event.keyCode == 39 ? 1 : -1);
         event.preventDefault();
         break;
-        
+
       case 13:
         if (this.selectedNodes.length !== 1) return;
         this.emit("activate");
         event.preventDefault();
         break;
     }
-  }
-  
+  };
+
   _moveVertically(offset: number) {
     // TODO: this._focusedNode;
     let node = this._firstSelectedNode;
@@ -317,7 +317,7 @@ class TreeView extends EventEmitter {
         if (node.nextElementSibling != null) node = <HTMLLIElement>node.nextElementSibling;
         else walkUp = true;
       }
-      
+
       if (walkUp) {
         if (node.parentElement.classList.contains("children")) {
           let target = <HTMLElement>node.parentElement;
@@ -341,7 +341,7 @@ class TreeView extends EventEmitter {
   _moveHorizontally = (offset: number) => {
     // TODO: this._focusedNode;
     let node = this._firstSelectedNode;
-    
+
     if (offset === -1) {
       if (!node.classList.contains("group") || node.classList.contains("collapsed")) {
         if (!node.parentElement.classList.contains("children")) return;
@@ -413,7 +413,7 @@ class TreeView extends EventEmitter {
       }
     }
 
-    return { target: <HTMLLIElement>element, where: where };
+    return { target: <HTMLLIElement>element, where };
   }
 
   _getInsertionPoint(element: HTMLElement, y: number) {
@@ -523,7 +523,7 @@ class TreeView extends EventEmitter {
         referenceElt = <HTMLElement>draggedChildren.nextSibling;
       }
     }
-  }
+  };
 }
 
 export = TreeView;
