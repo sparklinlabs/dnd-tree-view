@@ -11,4 +11,4 @@ const watchArgs = watchMode ? [ "-w" ] : [];
 spawn(`tsc${suffix}`, watchArgs.concat([ "-p", `${__dirname}/src` ]), spawnOptions);
 spawn(`jade${suffix}`, watchArgs.concat([ `${__dirname}/src/index.jade`, "--out", `${__dirname}/lib` ]), spawnOptions);
 spawn(`stylus${suffix}`, watchArgs.concat([ `${__dirname}/src/index.styl`, "--out", `${__dirname}/lib` ]), spawnOptions);
-spawn(`${bundler}${suffix}`, [ `${__dirname}/src/index.js`, "-o", `${__dirname}/lib/index.js` ], spawnOptions);
+spawn(`${bundler}${suffix}`, [ `${__dirname}/src/index.js`, "-s", "TreeView", "-o", `${__dirname}/lib/TreeView.js` ], spawnOptions);
