@@ -28,7 +28,7 @@
     "http-server": "~0.8.5",
     "jade": "~1.11.0",
     "stylus": "~0.53.0",
-    "typescript": "1.6.2",
+    "typescript": "~1.7.5",
     "watchify": "~3.7.0"
   }
 }
