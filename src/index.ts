@@ -2,30 +2,40 @@
 
 import { EventEmitter } from "events";
 
+interface DragStartCallback {
+  (event: DragEvent, nodeElt: HTMLLIElement): boolean;
+}
+
+interface DropLocation {
+  target: HTMLLIElement|HTMLOListElement;
+  where: string;
+}
+
 interface DropCallback {
-  (dropInfo: {
-    target: HTMLLIElement;
-    where: string /* "above", "inside" or "below" */;
-  },
+  (event: DragEvent,
+  dropLocation: DropLocation,
   orderedNodes: HTMLLIElement[]): boolean;
 }
 
 class TreeView extends EventEmitter {
-
   treeRoot: HTMLOListElement;
   selectedNodes: HTMLLIElement[];
-  dropCallback: DropCallback;
-  multipleSelection: boolean;
 
-  _firstSelectedNode: HTMLLIElement;
-  _hasDraggedOverAfterLeaving: boolean;
+  private dragStartCallback: DragStartCallback;
+  private dropCallback: DropCallback;
+  private multipleSelection: boolean;
 
-  constructor(container: HTMLDivElement, options?: { dropCallback?: DropCallback, multipleSelection?: boolean }) {
+  private firstSelectedNode: HTMLLIElement;
+  private hasDraggedOverAfterLeaving: boolean;
+  private isDraggingNodes: boolean;
+
+  constructor(container: HTMLDivElement, options?: { dragStartCallback?: DragStartCallback, dropCallback?: DropCallback, multipleSelection?: boolean }) {
     super();
 
     if (options == null) options = {};
 
     this.multipleSelection = (options.multipleSelection != null) ? options.multipleSelection : true;
+    this.dragStartCallback =  options.dragStartCallback;
     this.dropCallback =  options.dropCallback;
     this.treeRoot = document.createElement("ol");
     this.treeRoot.tabIndex = 0;
@@ -33,27 +43,31 @@ class TreeView extends EventEmitter {
     container.appendChild(this.treeRoot);
 
     this.selectedNodes = [];
-    this._firstSelectedNode = null;
+    this.firstSelectedNode = null;
 
     this.treeRoot.addEventListener("click", this._onClick);
-    this.treeRoot.addEventListener("dblclick", this._onDoubleClick);
-    this.treeRoot.addEventListener("keydown", this._onKeyDown);
+    this.treeRoot.addEventListener("dblclick", this.onDoubleClick);
+    this.treeRoot.addEventListener("keydown", this.onKeyDown);
     container.addEventListener("keydown", (event) => {
       if (event.keyCode === 37 || event.keyCode === 39) event.preventDefault();
     });
 
+    if (this.dragStartCallback != null) {
+      this.treeRoot.addEventListener("dragstart", this.onDragStart);
+      this.treeRoot.addEventListener("dragend", this.onDragEnd);
+    }
+    
     if (this.dropCallback != null) {
-      this.treeRoot.addEventListener("dragstart", this._onDragStart);
-      this.treeRoot.addEventListener("dragover", this._onDragOver);
-      this.treeRoot.addEventListener("dragleave", this._onDragLeave);
-      this.treeRoot.addEventListener("drop", this._onDrop);
+      this.treeRoot.addEventListener("dragover", this.onDragOver);
+      this.treeRoot.addEventListener("dragleave", this.onDragLeave);
+      this.treeRoot.addEventListener("drop", this.onDrop);
     }
   }
 
   clearSelection() {
-    for (let selectedNode of this.selectedNodes) selectedNode.classList.remove("selected");
+    for (const selectedNode of this.selectedNodes) selectedNode.classList.remove("selected");
     this.selectedNodes.length = 0;
-    this._firstSelectedNode = null;
+    this.firstSelectedNode = null;
   }
 
   addToSelection(element: HTMLLIElement) {
@@ -62,12 +76,12 @@ class TreeView extends EventEmitter {
     this.selectedNodes.push(element);
     element.classList.add("selected");
 
-    if (this.selectedNodes.length === 1) this._firstSelectedNode = element;
+    if (this.selectedNodes.length === 1) this.firstSelectedNode = element;
   }
 
   scrollIntoView(element: HTMLLIElement) {
-    let elementRect = element.getBoundingClientRect();
-    let containerRect = this.treeRoot.parentElement.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const containerRect = this.treeRoot.parentElement.getBoundingClientRect();
 
     if (elementRect.top < containerRect.top) element.scrollIntoView(true);
     else if (elementRect.bottom > containerRect.bottom) element.scrollIntoView(false);
@@ -88,10 +102,10 @@ class TreeView extends EventEmitter {
 
     if (!element.classList.contains(type)) {
       element.classList.add(type);
-      if (this.dropCallback != null) element.draggable = true;
+      if (this.dragStartCallback != null) element.draggable = true;
 
       if (type === "group") {
-        let toggleElt = document.createElement("div");
+        const toggleElt = document.createElement("div");
         toggleElt.classList.add("toggle");
         element.insertBefore(toggleElt, element.firstChild);
 
@@ -117,7 +131,7 @@ class TreeView extends EventEmitter {
 
     if (!element.classList.contains(type)) {
       element.classList.add(type);
-      if (this.dropCallback != null) element.draggable = true;
+      if (this.dragStartCallback != null) element.draggable = true;
 
       if (type === "group") {
         let toggleElt = document.createElement("div");
@@ -152,23 +166,23 @@ class TreeView extends EventEmitter {
   }
 
   remove(element: HTMLLIElement) {
-    let selectedIndex = this.selectedNodes.indexOf(element);
+    const selectedIndex = this.selectedNodes.indexOf(element);
     if (selectedIndex !== -1) this.selectedNodes.splice(selectedIndex, 1 );
-    if (this._firstSelectedNode === element) this._firstSelectedNode = this.selectedNodes[0];
+    if (this.firstSelectedNode === element) this.firstSelectedNode = this.selectedNodes[0];
 
     if (element.classList.contains("group")) {
-      let childrenElement = element.nextSibling as HTMLElement;
+      const childrenElement = element.nextSibling as HTMLElement;
 
-      let removedSelectedNodes: HTMLLIElement[] = [];
-      for (let selectedNode of this.selectedNodes) {
+      const removedSelectedNodes: HTMLLIElement[] = [];
+      for (const selectedNode of this.selectedNodes) {
         if (childrenElement.contains(selectedNode)) {
           removedSelectedNodes.push(selectedNode);
         }
       }
 
-      for (let removedSelectedNode of removedSelectedNodes) {
+      for (const removedSelectedNode of removedSelectedNodes) {
         this.selectedNodes.splice(this.selectedNodes.indexOf(removedSelectedNode), 1);
-        if (this._firstSelectedNode === removedSelectedNode) this._firstSelectedNode = this.selectedNodes[0];
+        if (this.firstSelectedNode === removedSelectedNode) this.firstSelectedNode = this.selectedNodes[0];
       }
 
       element.parentElement.removeChild(childrenElement);
@@ -179,7 +193,7 @@ class TreeView extends EventEmitter {
 
   _onClick = (event: MouseEvent) => {
     // Toggle groups
-    let element = event.target as HTMLElement;
+    const element = event.target as HTMLElement;
 
     if (element.className === "toggle") {
       if (element.parentElement.tagName === "LI" && element.parentElement.classList.contains("group")) {
@@ -189,11 +203,11 @@ class TreeView extends EventEmitter {
     }
 
     // Update selection
-    if (this._updateSelection(event)) this.emit("selectionChange");
+    if (this.updateSelection(event)) this.emit("selectionChange");
   };
 
   // Returns whether the selection changed
-  _updateSelection(event: MouseEvent) {
+  private updateSelection(event: MouseEvent) {
     let selectionChanged = false;
 
     if ((!this.multipleSelection || (!event.shiftKey && !event.ctrlKey)) && this.selectedNodes.length > 0) {
@@ -207,19 +221,19 @@ class TreeView extends EventEmitter {
       ancestorElement = ancestorElement.parentElement;
     }
 
-    let element = ancestorElement as HTMLLIElement;
+    const element = ancestorElement as HTMLLIElement;
 
     if (this.selectedNodes.length > 0 && this.selectedNodes[0].parentElement !== element.parentElement) {
       return selectionChanged;
     }
 
     if (this.multipleSelection && event.shiftKey && this.selectedNodes.length > 0) {
-      let startElement = this._firstSelectedNode;
-      let elements: HTMLLIElement[] = [];
+      const startElement = this.firstSelectedNode;
+      const elements: HTMLLIElement[] = [];
       let inside = false;
 
       for (let i = 0; i < element.parentElement.children.length; i++) {
-        let child = element.parentElement.children[i] as HTMLElement;
+        const child = element.parentElement.children[i] as HTMLElement;
 
         if (child === startElement || child === element) {
           if (inside || startElement === element ) {
@@ -234,8 +248,8 @@ class TreeView extends EventEmitter {
 
       this.clearSelection();
       this.selectedNodes = elements;
-      this._firstSelectedNode = startElement;
-      for (let selectedNode of this.selectedNodes) selectedNode.classList.add("selected");
+      this.firstSelectedNode = startElement;
+      for (const selectedNode of this.selectedNodes) selectedNode.classList.add("selected");
 
       return true;
     }
@@ -245,8 +259,8 @@ class TreeView extends EventEmitter {
       this.selectedNodes.splice(index, 1);
       element.classList.remove("selected");
 
-      if (this._firstSelectedNode === element) {
-        this._firstSelectedNode = this.selectedNodes[0];
+      if (this.firstSelectedNode === element) {
+        this.firstSelectedNode = this.selectedNodes[0];
       }
 
       return true;
@@ -256,7 +270,7 @@ class TreeView extends EventEmitter {
     return true;
   }
 
-  _onDoubleClick = (event: MouseEvent) => {
+  private onDoubleClick = (event: MouseEvent) => {
     if (this.selectedNodes.length !== 1) return;
 
     let element = event.target as HTMLElement;
@@ -265,10 +279,10 @@ class TreeView extends EventEmitter {
     this.emit("activate");
   };
 
-  _onKeyDown = (event: KeyboardEvent) => {
+  private onKeyDown = (event: KeyboardEvent) => {
     if (document.activeElement !== this.treeRoot) return;
 
-    if (this._firstSelectedNode == null) {
+    if (this.firstSelectedNode == null) {
       // TODO: Remove once we have this._focusedNode
       if (event.keyCode === 40) {
         this.addToSelection(this.treeRoot.firstElementChild as HTMLLIElement);
@@ -281,13 +295,13 @@ class TreeView extends EventEmitter {
     switch (event.keyCode) {
       case 38: // up
       case 40: // down
-        this._moveVertically(event.keyCode === 40 ? 1 : -1);
+        this.moveVertically(event.keyCode === 40 ? 1 : -1);
         event.preventDefault();
         break;
 
       case 37: // left
       case 39: // right
-        this._moveHorizontally(event.keyCode == 39 ? 1 : -1);
+        this.moveHorizontally(event.keyCode == 39 ? 1 : -1);
         event.preventDefault();
         break;
 
@@ -299,9 +313,9 @@ class TreeView extends EventEmitter {
     }
   };
 
-  _moveVertically(offset: number) {
+  private moveVertically(offset: number) {
     // TODO: this._focusedNode;
-    let node = this._firstSelectedNode;
+    let node = this.firstSelectedNode;
 
     if (offset === -1) {
       if (node.previousElementSibling != null) {
@@ -345,9 +359,9 @@ class TreeView extends EventEmitter {
     this.emit("selectionChange");
   };
 
-  _moveHorizontally = (offset: number) => {
+  private moveHorizontally = (offset: number) => {
     // TODO: this._focusedNode;
-    let node = this._firstSelectedNode;
+    let node = this.firstSelectedNode;
 
     if (offset === -1) {
       if (!node.classList.contains("group") || node.classList.contains("collapsed")) {
@@ -371,16 +385,11 @@ class TreeView extends EventEmitter {
     this.emit("selectionChange");
   };
 
-  _onDragStart = (event: DragEvent) => {
-    let element = event.target as HTMLLIElement;
+  private onDragStart = (event: DragEvent) => {
+    const element = event.target as HTMLLIElement;
     if (element.tagName !== "LI") return false;
     if (!element.classList.contains("item") && !element.classList.contains("group")) return false;
-
-    // NOTE: Required for Firefox to start the actual dragging
-    // "try" is required for IE11 to not raise an exception
-    try {
-      event.dataTransfer.setData("text/plain", element.dataset["dndText"] ? element.dataset["dndText"] : null);
-    } catch(e) { /* Ignore */ }
+    if (this.dragStartCallback != null && !this.dragStartCallback(event, element)) return false;
 
     if (this.selectedNodes.indexOf(element) === -1) {
       this.clearSelection();
@@ -388,10 +397,16 @@ class TreeView extends EventEmitter {
       this.emit("selectionChange");
     }
 
+    this.isDraggingNodes = true;
+
     return true;
   };
+  
+  private onDragEnd = (event: DragEvent) => {
+    this.isDraggingNodes = false;
+  };
 
-  _getDropInfo(event: DragEvent): { target: HTMLLIElement, where: string } {
+  private getDropLocation(event: DragEvent): DropLocation {
     let element = event.target as HTMLElement;
 
     if (element.tagName === "OL" && element.classList.contains("children")) {
@@ -400,6 +415,7 @@ class TreeView extends EventEmitter {
 
     if (element === this.treeRoot) {
       element = element.lastChild as HTMLElement;
+      if (element == null) return { target: this.treeRoot, where: "inside" };
       if (element.tagName === "OL") element = element.previousSibling as HTMLElement;
       return { target: element as HTMLLIElement, where: "below" };
     }
@@ -409,7 +425,7 @@ class TreeView extends EventEmitter {
       element = element.parentElement;
     }
 
-    let where = this._getInsertionPoint(element, event.pageY);
+    let where = this.getInsertionPoint(element, event.pageY);
     if (where === "below") {
       if (element.classList.contains("item") && element.nextSibling != null && (element.nextSibling as HTMLElement).tagName === "LI") {
         element = element.nextSibling as HTMLElement;
@@ -423,95 +439,105 @@ class TreeView extends EventEmitter {
     return { target: element as HTMLLIElement, where };
   }
 
-  _getInsertionPoint(element: HTMLElement, y: number) {
-    let rect = element.getBoundingClientRect();
-    let offset = y - rect.top;
+  private getInsertionPoint(element: HTMLElement, y: number) {
+    const rect = element.getBoundingClientRect();
+    const offset = y - rect.top;
 
     if (offset < rect.height / 4) return "above";
     if (offset > rect.height * 3 / 4) return (element.classList.contains("group") && (element.nextSibling as HTMLElement).childElementCount > 0) ? "inside" : "below";
     return element.classList.contains("item") ? "below" : "inside";
   }
 
-  _onDragOver = (event: DragEvent) => {
-    if (this.selectedNodes.length === 0) return false;
-    let dropInfo = this._getDropInfo(event);
+  private onDragOver = (event: DragEvent) => {
+    const dropLocation = this.getDropLocation(event);
 
-    // Prevent dropping onto null or descendant
-    if (dropInfo == null) return false;
-    if (dropInfo.where === "inside" && this.selectedNodes.indexOf(dropInfo.target) !== -1) return false;
+    // Prevent dropping onto null
+    if (dropLocation == null) return false;
 
-    for (let selectedNode of this.selectedNodes) {
-      if (selectedNode.classList.contains("group") && (selectedNode.nextSibling as HTMLElement).contains(dropInfo.target)) return false;
+    // If we're dragging nodes from the current tree view
+    // Prevent dropping into descendant
+    if (this.isDraggingNodes) {
+      if (dropLocation.where === "inside" && this.selectedNodes.indexOf(dropLocation.target as HTMLLIElement) !== -1) return false;
+
+      for (const selectedNode of this.selectedNodes) {
+        if (selectedNode.classList.contains("group") && (selectedNode.nextSibling as HTMLElement).contains(dropLocation.target)) return false;
+      }
     }
 
-    this._hasDraggedOverAfterLeaving = true;
-    this._clearDropClasses();
-    dropInfo.target.classList.add(`drop-${dropInfo.where}`);
+    this.hasDraggedOverAfterLeaving = true;
+    this.clearDropClasses();
+    dropLocation.target.classList.add(`drop-${dropLocation.where}`);
     event.preventDefault();
   };
 
-  _clearDropClasses() {
-    let dropAbove = this.treeRoot.querySelector(".drop-above") as HTMLElement;
+  private clearDropClasses() {
+    const dropAbove = this.treeRoot.querySelector(".drop-above") as HTMLElement;
     if (dropAbove != null) dropAbove.classList.remove("drop-above");
 
-    let dropInside = this.treeRoot.querySelector(".drop-inside") as HTMLElement;
+    const dropInside = this.treeRoot.querySelector(".drop-inside") as HTMLElement;
     if (dropInside != null) dropInside.classList.remove("drop-inside");
 
-    let dropBelow = this.treeRoot.querySelector(".drop-below") as HTMLElement;
+    const dropBelow = this.treeRoot.querySelector(".drop-below") as HTMLElement;
     if (dropBelow != null) dropBelow.classList.remove("drop-below");
+
+    // For the rare case where we're dropping a foreign item into an empty tree view
+    this.treeRoot.classList.remove("drop-inside");
   }
 
-  _onDragLeave = (event: DragEvent) => {
-    this._hasDraggedOverAfterLeaving = false;
-    setTimeout(() => { if (!this._hasDraggedOverAfterLeaving) this._clearDropClasses(); }, 300);
+  private onDragLeave = (event: DragEvent) => {
+    this.hasDraggedOverAfterLeaving = false;
+    setTimeout(() => { if (!this.hasDraggedOverAfterLeaving) this.clearDropClasses(); }, 300);
   };
 
-  _onDrop = (event: DragEvent) => {
+  private onDrop = (event: DragEvent) => {
     event.preventDefault();
-    if (this.selectedNodes.length === 0) return;
+    const dropLocation = this.getDropLocation(event);
+    if (dropLocation == null) return;
 
-    let dropInfo = this._getDropInfo(event);
-    if (dropInfo == null) return;
+    this.clearDropClasses();
 
-    this._clearDropClasses();
+    if (!this.isDraggingNodes) { 
+      this.dropCallback(event, dropLocation, null);
+      return false;
+    }
 
-    let children = this.selectedNodes[0].parentElement.children;
-    let orderedNodes: HTMLLIElement[] = [];
+    const children = this.selectedNodes[0].parentElement.children;
+    const orderedNodes: HTMLLIElement[] = [];
 
     for (let i = 0; i < children.length; i++) {
-      let child = children[i] as HTMLLIElement;
+      const child = children[i] as HTMLLIElement;
       if (this.selectedNodes.indexOf(child) !== -1) orderedNodes.push(child);
     }
 
-    let reparent = (this.dropCallback != null) ? this.dropCallback(dropInfo, orderedNodes) : true;
+    const reparent = (this.dropCallback != null) ? this.dropCallback(event, dropLocation, orderedNodes) : true;
     if (!reparent) return;
 
     let newParent: HTMLElement;
     let referenceElt: HTMLElement;
 
-    switch (dropInfo.where) {
+    switch (dropLocation.where) {
       case "inside":
-        if (!dropInfo.target.classList.contains("group")) return;
+        if (!dropLocation.target.classList.contains("group")) return;
 
-        newParent = dropInfo.target.nextSibling as HTMLElement;
+        newParent = dropLocation.target.nextSibling as HTMLElement;
         referenceElt = null;
         break;
 
       case "below":
-        newParent = dropInfo.target.parentElement;
-        referenceElt = dropInfo.target.nextSibling as HTMLElement;
+        newParent = dropLocation.target.parentElement;
+        referenceElt = dropLocation.target.nextSibling as HTMLElement;
         if (referenceElt != null && referenceElt.tagName === "OL") referenceElt = referenceElt.nextSibling as HTMLElement;
         break;
 
       case "above":
-        newParent = dropInfo.target.parentElement;
-        referenceElt = dropInfo.target;
+        newParent = dropLocation.target.parentElement;
+        referenceElt = dropLocation.target;
         break;
     }
 
     let draggedChildren: HTMLElement;
 
-    for (let selectedNode of orderedNodes) {
+    for (const selectedNode of orderedNodes) {
       if (selectedNode.classList.contains("group")) {
         draggedChildren = selectedNode.nextSibling as HTMLElement;
         draggedChildren.parentElement.removeChild(draggedChildren);

@@ -2,7 +2,11 @@ declare class TreeView {
   treeRoot: HTMLOListElement;
   selectedNodes: HTMLLIElement[];
 
-  constructor(container: HTMLElement, options?: { dropCallback?: TreeView.DropCallback, multipleSelection?: boolean });
+  constructor(container: HTMLElement, options?: {
+    dragStartCallback?: TreeView.DragStartCallback,
+    dropCallback?: TreeView.DropCallback,
+    multipleSelection?: boolean
+  });
   clearSelection(): void;
   addToSelection(element: HTMLLIElement): void;
   append(element: HTMLLIElement, type: string /* "item" or "group" */, parentGroupElement?: HTMLElement): void;
@@ -26,11 +30,13 @@ declare class TreeView {
 }
 
 declare namespace TreeView {
+  interface DragStartCallback {
+    (event: DragEvent, nodeElt: HTMLLIElement): boolean;
+  }
+  
   interface DropCallback {
-    (dropInfo: {
-      target: HTMLLIElement;
-      where: string /* "above", "inside" or "below" */;
-    },
+    (event: DragEvent,
+    dropLocation: { target: HTMLLIElement|HTMLOListElement; where: string /* "above", "inside" or "below" */; },
     orderedNodes: HTMLLIElement[]): boolean;
   }
 }

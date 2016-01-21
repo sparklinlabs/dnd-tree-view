@@ -18,10 +18,17 @@ Check out the [live demo](http://sparklinlabs.github.io/dnd-tree-view/) and its 
 
 The `TreeView` constructor takes an optional second `options` parameter. It supports the following keys:
 
- * `dropCallback` should be `null` or a function of the form `(dropInfo: { target: HTMLLIElement, where: string }, orderedNodes: HTMLElement[]) => boolean`. It'll be called when a drag'n'drop operation ends and must return whether to proceed with the reparenting/reordering or not.
+ * `dragStartCallback` and `dropCallback` for handling drag'n'drop operations. 
  * `multipleSelection` is a boolean indicating whether to enable multiple item selection or not.
 
-See [index.d.ts](https://github.com/sparklinlabs/dnd-tree-view/blob/master/index.d.ts) for the full API.
+If `dragStartCallback` is not `null`, then dragging elements will be enabled.
+It must return a boolean indicating whether to start the drag operation or cancel it.
+You can use [`event.dataTransfer.setData(...)`](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations) to setup drag'n'drop metadata.
+
+If `dropCallback` is not `null`, then dropping will be enabled.
+It must return a boolean indicating whether to proceed with the reparenting/reordering or not.
+
+See [index.d.ts](https://github.com/sparklinlabs/dnd-tree-view/blob/master/index.d.ts) for the full API and arguments.
 
 ## Building from source
 
