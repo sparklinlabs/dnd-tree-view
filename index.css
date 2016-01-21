@@ -48,6 +48,12 @@ nav button {
   margin-right: 0.5em;
   padding: 0.5em;
 }
+nav .dnd-result {
+  margin-left: 0.5em;
+  flex: 1;
+  text-align: right;
+  color: #666;
+}
 ol.tree {
   position: absolute;
   list-style: none;
@@ -59,6 +65,14 @@ ol.tree {
 }
 ol.tree * {
   -webkit-user-select: none;
+}
+ol.tree.drop-inside:before {
+  position: absolute;
+  content: "";
+  border-top: 1px solid #888;
+  left: 0.25em;
+  right: 0.25em;
+  top: 0.25em;
 }
 ol.tree ol {
   list-style: none;
