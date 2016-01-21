@@ -8,7 +8,7 @@ interface DragStartCallback {
 
 interface DropLocation {
   target: HTMLLIElement|HTMLOListElement;
-  where: string;
+  where: string; // "above", "inside" or "below"
 }
 
 interface DropCallback {

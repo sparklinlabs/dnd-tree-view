@@ -33,10 +33,15 @@ declare namespace TreeView {
   interface DragStartCallback {
     (event: DragEvent, nodeElt: HTMLLIElement): boolean;
   }
-  
+
+  interface DropLocation {
+    target: HTMLLIElement|HTMLOListElement;
+    where: string; // "above", "inside" or "below"
+  }
+
   interface DropCallback {
     (event: DragEvent,
-    dropLocation: { target: HTMLLIElement|HTMLOListElement; where: string /* "above", "inside" or "below" */; },
+    dropLocation: DropLocation,
     orderedNodes: HTMLLIElement[]): boolean;
   }
 }
