@@ -494,7 +494,7 @@ class TreeView extends EventEmitter {
         if (!dropInfo.target.classList.contains("group")) return;
 
         newParent = dropInfo.target.nextSibling as HTMLElement;
-        referenceElt = newParent.firstChild as HTMLElement;
+        referenceElt = null;
         break;
 
       case "below":
