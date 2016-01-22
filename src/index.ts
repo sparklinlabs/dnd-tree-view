@@ -313,7 +313,7 @@ class TreeView extends EventEmitter {
     }
   };
 
-  private moveVertically(offset: number) {
+  moveVertically(offset: number) {
     // TODO: this._focusedNode;
     let node = this.firstSelectedNode;
 
@@ -359,7 +359,7 @@ class TreeView extends EventEmitter {
     this.emit("selectionChange");
   };
 
-  private moveHorizontally = (offset: number) => {
+  moveHorizontally = (offset: number) => {
     // TODO: this._focusedNode;
     let node = this.firstSelectedNode;
 
