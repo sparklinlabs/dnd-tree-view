@@ -15,8 +15,8 @@ declare class TreeView {
   remove(element: HTMLLIElement): void;
   
   scrollIntoView(element: HTMLLIElement): void;
-  moveVertically(offset: number /* 1 or -1 */);
-  moveHorizontally(offset: number /* 1 or -1 */);
+  moveVertically(offset: number /* 1 or -1 */): void;
+  moveHorizontally(offset: number /* 1 or -1 */): void;
 
   addListener(event: string, listener: Function): TreeView;
   on(event: string, listener: Function): TreeView;
