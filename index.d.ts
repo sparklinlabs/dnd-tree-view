@@ -13,6 +13,8 @@ declare class TreeView {
   insertBefore(element: HTMLLIElement, type: string, referenceElement: HTMLLIElement): void;
   insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement): void;
   remove(element: HTMLLIElement): void;
+  
+  scrollIntoView(element: HTMLLIElement);
 
   addListener(event: string, listener: Function): TreeView;
   on(event: string, listener: Function): TreeView;
