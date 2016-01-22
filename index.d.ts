@@ -14,7 +14,7 @@ declare class TreeView {
   insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement): void;
   remove(element: HTMLLIElement): void;
   
-  scrollIntoView(element: HTMLLIElement);
+  scrollIntoView(element: HTMLLIElement): void;
 
   addListener(event: string, listener: Function): TreeView;
   on(event: string, listener: Function): TreeView;
