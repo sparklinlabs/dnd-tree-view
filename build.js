@@ -1,5 +1,7 @@
 "use strict";
 
+try { require("fs").mkdirSync(`${__dirname}/lib`); } catch (err) {}
+
 const spawn = require("child_process").spawn;
 const spawnOptions = { stdio: "inherit" };
 const suffix = (process.platform === "win32") ? ".cmd" : "";
