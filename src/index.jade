@@ -32,7 +32,7 @@ html
       });
 
       function createItem(label) {
-        itemElt = document.createElement("li");
+        var itemElt = document.createElement("li");
 
         iconElt = document.createElement("div");
         iconElt.classList.add("icon");
@@ -46,7 +46,7 @@ html
       }
 
       function createGroup(label) {
-        groupElt = document.createElement("li");
+        var groupElt = document.createElement("li");
 
         spanElt = document.createElement("span");
         spanElt.textContent = label;
