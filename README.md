@@ -34,4 +34,4 @@ See [index.d.ts](https://github.com/sparklinlabs/dnd-tree-view/blob/master/index
 
  * Make sure you have a recent version of [Node.js](http://nodejs.org/) installed.
  * Clone the repository from `https://github.com/sparklinlabs/dnd-tree-view` and run `npm install` once
- * Run `npm run build` to build once or `npm run watch` to start a watcher that will rebuild when changes are detecting
+ * Run `npm run build` to build once or `npm run watch` to start a watcher that will rebuild when changes are detected
