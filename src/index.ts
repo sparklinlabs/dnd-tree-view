@@ -80,6 +80,12 @@ class TreeView extends EventEmitter {
   }
 
   scrollIntoView(element: HTMLLIElement) {
+    let ancestor = element.parentElement;
+    while (ancestor != null && ancestor.className === "children") {
+      ancestor.previousElementSibling.classList.remove("collapsed");
+      ancestor = ancestor.parentElement;
+    }
+
     const elementRect = element.getBoundingClientRect();
     const containerRect = this.treeRoot.parentElement.getBoundingClientRect();
 
