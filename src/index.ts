@@ -56,7 +56,7 @@ class TreeView extends EventEmitter {
       this.treeRoot.addEventListener("dragstart", this.onDragStart);
       this.treeRoot.addEventListener("dragend", this.onDragEnd);
     }
-    
+
     if (this.dropCallback != null) {
       this.treeRoot.addEventListener("dragover", this.onDragOver);
       this.treeRoot.addEventListener("dragleave", this.onDragLeave);
@@ -91,6 +91,14 @@ class TreeView extends EventEmitter {
 
     if (elementRect.top < containerRect.top) element.scrollIntoView(true);
     else if (elementRect.bottom > containerRect.bottom) element.scrollIntoView(false);
+  }
+
+  clear() {
+    this.treeRoot.innerHTML = "";
+    this.selectedNodes.length = 0;
+    this.firstSelectedNode = null;
+    this.hasDraggedOverAfterLeaving = false;
+    this.isDraggingNodes = false;
   }
 
   append(element: HTMLLIElement, type: string, parentGroupElement?: HTMLLIElement) {
@@ -173,7 +181,10 @@ class TreeView extends EventEmitter {
 
   remove(element: HTMLLIElement) {
     const selectedIndex = this.selectedNodes.indexOf(element);
-    if (selectedIndex !== -1) this.selectedNodes.splice(selectedIndex, 1 );
+    if (selectedIndex !== -1) {
+      element.classList.remove("selected");
+      this.selectedNodes.splice(selectedIndex, 1);
+    }
     if (this.firstSelectedNode === element) this.firstSelectedNode = this.selectedNodes[0];
 
     if (element.classList.contains("group")) {
@@ -187,6 +198,7 @@ class TreeView extends EventEmitter {
       }
 
       for (const removedSelectedNode of removedSelectedNodes) {
+        removedSelectedNode.classList.remove("selected");
         this.selectedNodes.splice(this.selectedNodes.indexOf(removedSelectedNode), 1);
         if (this.firstSelectedNode === removedSelectedNode) this.firstSelectedNode = this.selectedNodes[0];
       }
@@ -307,7 +319,7 @@ class TreeView extends EventEmitter {
 
       case 37: // left
       case 39: // right
-        this.moveHorizontally(event.keyCode == 39 ? 1 : -1);
+        this.moveHorizontally(event.keyCode === 39 ? 1 : -1);
         event.preventDefault();
         break;
 
@@ -395,7 +407,6 @@ class TreeView extends EventEmitter {
     const element = event.target as HTMLLIElement;
     if (element.tagName !== "LI") return false;
     if (!element.classList.contains("item") && !element.classList.contains("group")) return false;
-    if (this.dragStartCallback != null && !this.dragStartCallback(event, element)) return false;
 
     if (this.selectedNodes.indexOf(element) === -1) {
       this.clearSelection();
@@ -403,11 +414,13 @@ class TreeView extends EventEmitter {
       this.emit("selectionChange");
     }
 
+    if (this.dragStartCallback != null && !this.dragStartCallback(event, element)) return false;
+
     this.isDraggingNodes = true;
 
     return true;
   };
-  
+
   private onDragEnd = (event: DragEvent) => {
     this.isDraggingNodes = false;
   };
@@ -502,7 +515,7 @@ class TreeView extends EventEmitter {
 
     this.clearDropClasses();
 
-    if (!this.isDraggingNodes) { 
+    if (!this.isDraggingNodes) {
       this.dropCallback(event, dropLocation, null);
       return false;
     }

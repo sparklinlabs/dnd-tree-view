@@ -7,13 +7,16 @@ declare class TreeView {
     dropCallback?: TreeView.DropCallback,
     multipleSelection?: boolean
   });
-  clearSelection(): void;
-  addToSelection(element: HTMLLIElement): void;
+
+  clear();
   append(element: HTMLLIElement, type: string /* "item" or "group" */, parentGroupElement?: HTMLElement): void;
   insertBefore(element: HTMLLIElement, type: string, referenceElement: HTMLLIElement): void;
   insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement): void;
   remove(element: HTMLLIElement): void;
-  
+
+  clearSelection(): void;
+  addToSelection(element: HTMLLIElement): void;
+
   scrollIntoView(element: HTMLLIElement): void;
   moveVertically(offset: number /* 1 or -1 */): void;
   moveHorizontally(offset: number /* 1 or -1 */): void;
