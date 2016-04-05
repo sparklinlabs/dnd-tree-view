@@ -9,7 +9,7 @@ declare class TreeView {
   });
 
   clear(): void;
-  append(element: HTMLLIElement, type: string /* "item" or "group" */, parentGroupElement?: HTMLElement): void;
+  append(element: HTMLLIElement, type: "item" | "group", parentGroupElement?: HTMLElement): void;
   insertBefore(element: HTMLLIElement, type: string, referenceElement: HTMLLIElement): void;
   insertAt(element: HTMLLIElement, type: string, index: number, parentElement?: HTMLLIElement): void;
   remove(element: HTMLLIElement): void;
@@ -43,7 +43,7 @@ declare namespace TreeView {
 
   interface DropLocation {
     target: HTMLLIElement|HTMLOListElement;
-    where: string; // "above", "inside" or "below"
+    where: "above" | "inside" | "below";
   }
 
   interface DropCallback {
