@@ -221,6 +221,7 @@ class TreeView extends EventEmitter {
     }
 
     // Update selection
+    if (element.tagName === "BUTTON" || element.tagName === "INPUT" || element.tagName === "SELECT") return;
     if (this.updateSelection(event)) this.emit("selectionChange");
   };
 
@@ -292,6 +293,7 @@ class TreeView extends EventEmitter {
     if (this.selectedNodes.length !== 1) return;
 
     let element = event.target as HTMLElement;
+    if (element.tagName === "BUTTON" || element.tagName === "INPUT" || element.tagName === "SELECT") return;
     if (element.className === "toggle") return;
 
     this.emit("activate");
