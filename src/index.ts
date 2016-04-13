@@ -45,7 +45,7 @@ class TreeView extends EventEmitter {
     this.selectedNodes = [];
     this.firstSelectedNode = null;
 
-    this.treeRoot.addEventListener("click", this._onClick);
+    this.treeRoot.addEventListener("click", this.onClick);
     this.treeRoot.addEventListener("dblclick", this.onDoubleClick);
     this.treeRoot.addEventListener("keydown", this.onKeyDown);
     container.addEventListener("keydown", (event) => {
@@ -209,7 +209,7 @@ class TreeView extends EventEmitter {
     element.parentElement.removeChild(element);
   }
 
-  _onClick = (event: MouseEvent) => {
+  private onClick = (event: MouseEvent) => {
     // Toggle groups
     const element = event.target as HTMLElement;
 
@@ -301,7 +301,7 @@ class TreeView extends EventEmitter {
     if (document.activeElement !== this.treeRoot) return;
 
     if (this.firstSelectedNode == null) {
-      // TODO: Remove once we have this._focusedNode
+      // TODO: Remove once we have this.focusedNode
       if (event.keyCode === 40) {
         this.addToSelection(this.treeRoot.firstElementChild as HTMLLIElement);
         this.emit("selectionChange");
@@ -332,7 +332,7 @@ class TreeView extends EventEmitter {
   };
 
   moveVertically(offset: number) {
-    // TODO: this._focusedNode;
+    // TODO: this.focusedNode;
     let node = this.firstSelectedNode;
 
     if (offset === -1) {
@@ -378,7 +378,7 @@ class TreeView extends EventEmitter {
   };
 
   moveHorizontally = (offset: number) => {
-    // TODO: this._focusedNode;
+    // TODO: this.focusedNode;
     let node = this.firstSelectedNode;
 
     if (offset === -1) {
