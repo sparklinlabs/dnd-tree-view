@@ -10,7 +10,7 @@ const watchMode = process.argv[2] === "-w";
 const bundler = watchMode ? "watchify" : "browserify";
 const watchArgs = watchMode ? [ "-w" ] : []; 
 
-spawn(`jade${suffix}`, watchArgs.concat([ `${__dirname}/src/index.jade`, "--out", `${__dirname}/lib` ]), spawnOptions);
+spawn(`pug${suffix}`, watchArgs.concat([ `${__dirname}/src/index.pug`, "--out", `${__dirname}/lib` ]), spawnOptions);
 spawn(`stylus${suffix}`, watchArgs.concat([ `${__dirname}/src/index.styl`, "--out", `${__dirname}/lib` ]), spawnOptions);
 
 spawn(`tsc${suffix}`, [ "-p", `${__dirname}/src` ], spawnOptions).on("close", () => {

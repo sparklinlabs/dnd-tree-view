@@ -53,4 +53,6 @@ declare namespace TreeView {
   }
 }
 
-export = TreeView;
+declare module "dnd-tree-view" {
+  export = TreeView;
+}
