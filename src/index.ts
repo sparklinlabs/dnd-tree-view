@@ -24,6 +24,7 @@ class TreeView extends EventEmitter {
   private multipleSelection: boolean;
 
   private firstSelectedNode: HTMLLIElement;
+  private previousDropLocation: DropLocation;
   private hasDraggedOverAfterLeaving: boolean;
   private isDraggingNodes: boolean;
 
@@ -422,6 +423,8 @@ class TreeView extends EventEmitter {
   };
 
   private onDragEnd = (event: DragEvent) => {
+    this.previousDropLocation = null;
+
     this.isDraggingNodes = false;
   };
 
@@ -473,6 +476,13 @@ class TreeView extends EventEmitter {
     // Prevent dropping onto null
     if (dropLocation == null) return false;
 
+    if (this.previousDropLocation != null && this.previousDropLocation.where == dropLocation.where && this.previousDropLocation.target == dropLocation.target) {
+      event.preventDefault();
+      return;
+    }
+
+    this.previousDropLocation = dropLocation;
+
     // If we're dragging nodes from the current tree view
     // Prevent dropping into descendant
     if (this.isDraggingNodes) {
@@ -509,6 +519,8 @@ class TreeView extends EventEmitter {
   };
 
   private onDrop = (event: DragEvent) => {
+    this.previousDropLocation = null;
+
     event.preventDefault();
     const dropLocation = this.getDropLocation(event);
     if (dropLocation == null) return;
