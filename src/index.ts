@@ -476,13 +476,6 @@ class TreeView extends EventEmitter {
     // Prevent dropping onto null
     if (dropLocation == null) return false;
 
-    if (this.previousDropLocation != null && this.previousDropLocation.where == dropLocation.where && this.previousDropLocation.target == dropLocation.target) {
-      event.preventDefault();
-      return;
-    }
-
-    this.previousDropLocation = dropLocation;
-
     // If we're dragging nodes from the current tree view
     // Prevent dropping into descendant
     if (this.isDraggingNodes) {
@@ -494,8 +487,14 @@ class TreeView extends EventEmitter {
     }
 
     this.hasDraggedOverAfterLeaving = true;
-    this.clearDropClasses();
-    dropLocation.target.classList.add(`drop-${dropLocation.where}`);
+
+    if (this.previousDropLocation == null || this.previousDropLocation.where != dropLocation.where || this.previousDropLocation.target != dropLocation.target) {
+      this.previousDropLocation = dropLocation;
+
+      this.clearDropClasses();
+      dropLocation.target.classList.add(`drop-${dropLocation.where}`);
+    }
+
     event.preventDefault();
   };
 
